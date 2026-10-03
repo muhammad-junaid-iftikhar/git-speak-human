@@ -310,7 +310,8 @@ define({
       let said = git(["bisect", "good", good], { mutates: true }).stdout;
       if (opts.run) {
         const sh = process.platform === "win32" ? ["cmd", "/c"] : ["sh", "-c"];
-        said = git(["bisect", "run", ...sh, String(opts.run)], { mutates: true, allowFail: true }).stdout;
+        const r = git(["bisect", "run", ...sh, String(opts.run)], { mutates: true, allowFail: true });
+        said = r.stdout + r.stderr;
       } else {
         while (!/is the first bad commit/.test(said)) {
           const left = said.match(/roughly (\d+) steps?/)?.[1];
@@ -321,10 +322,12 @@ define({
           if (a.startsWith("q")) fail("Stopped hunting. Everything is back to normal.");
           const verdict = a.startsWith("y") ? "good" : a.startsWith("n") ? "bad" : a.startsWith("s") ? "skip" : "";
           if (!verdict) continue;
-          said = git(["bisect", verdict], { mutates: true, allowFail: true }).stdout;
+          const r = git(["bisect", verdict], { mutates: true, allowFail: true });
+          said = r.stdout + r.stderr;
         }
       }
-      culprit = said.match(/([0-9a-f]{40}) is the first bad commit/)?.[1] ?? "";
+      const log = git(["bisect", "log"], { allowFail: true }).stdout;
+      culprit = log.match(/# first bad commit: \[([0-9a-f]{40})\]/)?.[1] ?? said.match(/([0-9a-f]{40}) is the first bad commit/)?.[1] ?? "";
     } finally {
       git(["bisect", "reset"], { mutates: true, allowFail: true });
       untuck(tucked);
