@@ -19,10 +19,10 @@ Pick one:
 # With Bun
 bun install -g github:muhammad-junaid-iftikhar/git-speak-human
 
-# macOS / Linux, no Bun needed (once a release is published)
+# macOS / Linux, no Bun needed
 curl -fsSL https://raw.githubusercontent.com/muhammad-junaid-iftikhar/git-speak-human/main/install.sh | sh
 
-# Windows PowerShell (once a release is published)
+# Windows PowerShell
 irm https://raw.githubusercontent.com/muhammad-junaid-iftikhar/git-speak-human/main/install.ps1 | iex
 ```
 

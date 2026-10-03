@@ -21,11 +21,11 @@ esac
 
 command -v git >/dev/null 2>&1 || say "Heads up: git isn't installed yet. Get it from https://git-scm.com/downloads"
 
-asset="gitbuddy-$os-$arch"
+asset="gitbuddy-${os}-${arch}"
 url="https://github.com/$REPO/releases/latest/download/$asset"
 tmp="$(mktemp)"
 
-say "Downloading gitbuddy for $os/$arch…"
+say "Downloading gitbuddy for ${os}/${arch}…"
 if command -v curl >/dev/null 2>&1; then
   curl -fsSL "$url" -o "$tmp" || die "Download failed. Is there a release yet? You can also run: bun install -g github:$REPO"
 else
