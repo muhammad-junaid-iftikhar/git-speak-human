@@ -310,8 +310,7 @@ define({
       git(["bisect", "bad", "HEAD"], { mutates: true });
       let said = git(["bisect", "good", good], { mutates: true }).stdout;
       if (opts.run) {
-        const sh = process.platform === "win32" ? ["cmd", "/c"] : ["sh", "-c"];
-        const r = git(["bisect", "run", ...sh, String(opts.run)], { mutates: true, allowFail: true });
+        const r = git(["bisect", "run", String(opts.run)], { mutates: true, allowFail: true });
         said = r.stdout + r.stderr;
       } else {
         while (!/is the first '?bad'? commit/.test(said)) {
