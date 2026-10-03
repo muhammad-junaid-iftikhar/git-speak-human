@@ -137,12 +137,12 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 
 ## Phase 7 — Distribution: install once, it just works (P1)
 
-- [ ] Publish to npm under a free name (check whether `gitbuddy` is taken; fallback `@<scope>/gitbuddy` or `gitbuddy-cli`). Install with `bun add -g` or `npm i -g`.
-- [ ] Single-file binaries with `bun build --compile` for macOS (arm64/x64), Linux (x64/arm64) and Windows, attached to GitHub Releases.
-- [ ] One-line installer: `curl -fsSL https://…/install.sh | sh` (and a PowerShell version).
+- [ ] **Needs you:** create an npm token, add it as the `NPM_TOKEN` secret and set the repo variable `PUBLISH_NPM=true`; the release workflow then publishes on every tag. Publish to npm under a free name (check whether `gitbuddy` is taken; fallback `@<scope>/gitbuddy` or `gitbuddy-cli`). Install with `bun add -g` or `npm i -g`.
+- [x] Single-file binaries with `bun build --compile` for macOS (arm64/x64), Linux (x64/arm64) and Windows, attached to GitHub Releases.
+- [x] One-line installer: `curl -fsSL https://…/install.sh | sh` (and a PowerShell version).
 - [ ] Homebrew tap, Scoop bucket, AUR (P2).
 - [x] `gitbuddy update`: self-update, with a gentle "new version available" notice at most once a day.
-- [ ] Release automation: tag → CI builds binaries → GitHub Release → npm publish.
+- [x] Release automation: tag → CI builds binaries → GitHub Release → npm publish.
 
 ## Phase 8 — Docs, community, world (P2)
 
