@@ -34,7 +34,7 @@ For people who already know git. Every gitbuddy command is plain git underneath.
 | `git bisect` | `gitbuddy when-broke` | yes/no questions, or `--run "cmd"` |
 | `git restore . && git clean -fd` | `gitbuddy throw-away` | snapshot first, so it's undoable |
 | `git reset --soft HEAD~1` | `gitbuddy unsave` | push guard |
-| `git revert` | `gitbuddy reverse <id\|last>` | |
+| `git revert` | `gitbuddy revert <id\|last\|--pr 42>` | several saves or a whole PR; opens a revert PR on main/protected branches (`--here` to stay local) |
 | `.gitignore` + `git rm --cached` | `gitbuddy ignore <pattern>` | |
 | `git filter-repo --invert-paths` | `gitbuddy forget-file <path>` | keeps your remote configured |
 | `git checkout --ours/--theirs` | `gitbuddy keep mine\|theirs\|both` | "mine" is always *your* side, even during rebase |

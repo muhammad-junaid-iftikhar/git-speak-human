@@ -219,7 +219,7 @@ define({
       ui.line(git(["show", "--format=", ctx.useColor ? "--color=always" : "--no-color", commit]).stdout.trimEnd());
     }
     ui.blank();
-    if (sent) ui.next(`gitbuddy reverse ${id}`, "cancel it with a new save (safe, it was already sent)");
+    if (sent) ui.next(`gitbuddy revert ${id}`, "cancel it with a new save (safe, it was already sent)");
     else if (isLast) {
       ui.next("gitbuddy unsave", "take it back, keep the changes in your files");
       ui.next('gitbuddy fix-last "new message"', "rename it");

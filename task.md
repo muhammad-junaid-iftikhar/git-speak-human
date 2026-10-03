@@ -176,12 +176,12 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [x] `gitbuddy try --clean-up`: remove try-folders and copies.
 
 **3. Revert made easy, including a revert PR**
-- [ ] Rename `reverse` to `revert` (keep `reverse` as an alias).
-- [ ] `gitbuddy revert` with no argument: pick from recent saves and merged PRs.
-- [ ] `gitbuddy revert --pr 42`: find what PR #42 merged and revert all of it.
-- [ ] `gitbuddy revert <a>..<b>` / several ids: revert multiple saves as one.
-- [ ] On a protected/default branch with a remote, revert opens a revert PR automatically: branch from the latest `origin/main`, revert there, send, open the PR, then bring you back. `--here` reverts locally instead.
-- [ ] Explain before doing it: which saves and files will be reverted.
+- [x] Rename `reverse` to `revert` (keep `reverse` as an alias).
+- [x] `gitbuddy revert` with no argument: pick from recent saves and merged PRs.
+- [x] `gitbuddy revert --pr 42`: find what PR #42 merged and revert all of it.
+- [x] `gitbuddy revert <a>..<b>` / several ids: revert multiple saves as one.
+- [x] On a protected/default branch with a remote, revert opens a revert PR automatically: branch from the latest `origin/main`, revert there, send, open the PR, then bring you back. `--here` reverts locally instead.
+- [x] Explain before doing it: which saves and files will be reverted.
 
 **4. Proper versions**
 - [ ] `gitbuddy --version` / `-v` work, and `gitbuddy version` shows git, Bun, install method and whether an update is available.

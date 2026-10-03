@@ -148,7 +148,7 @@ describe("fixing mistakes", () => {
     const s = new Sandbox().init();
     s.write("a.txt", "a\n");
     s.run("done", "add a");
-    s.run("reverse", "last");
+    s.run("revert", "last", "--yes");
     expect(s.exists("a.txt")).toBe(false);
     expect(saves(s)[0]).toContain("Revert");
   });

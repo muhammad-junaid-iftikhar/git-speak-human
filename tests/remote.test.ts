@@ -201,3 +201,60 @@ describe("try someone's branch", () => {
     expect(me.run("try", "feature").json.error.hint).toContain("feature/x");
   });
 });
+
+describe("revert", () => {
+  test("on main with a remote, revert opens a revert branch and leaves my work alone", () => {
+    const { me, bare } = setup();
+    me.write("bad.txt", "bad\n");
+    me.run("done", "Bad change");
+    me.run("send", "--branch", "tmp");
+    me.git("push", "-q", "origin", "HEAD:main");
+    me.git("fetch", "-q");
+    me.write("wip.txt", "wip\n");
+    const r = me.run("revert", "last", "--yes");
+    expect(r.json.ok).toBe(true);
+    expect(r.json.data.viaPullRequest).toBe(true);
+    expect(r.json.data.branch).toBe("revert/bad-change");
+    expect(remoteHas(bare, "refs/heads/revert/bad-change")).toBe(true);
+    expect(me.git("branch", "--show-current")).toBe("main");
+    expect(me.read("wip.txt")).toBe("wip\n");
+    expect(me.exists("bad.txt")).toBe(true);
+    const p = Bun.spawnSync(["git", "--git-dir", bare, "ls-tree", "--name-only", "revert/bad-change"]);
+    expect(p.stdout.toString()).not.toContain("bad.txt");
+  });
+
+  test("--here reverts locally; several saves become one revert save", () => {
+    const s = new Sandbox().init();
+    s.write("a.txt", "a");
+    s.run("done", "add a");
+    s.write("b.txt", "b");
+    s.run("done", "add b");
+    const a = s.git("rev-parse", "HEAD~1");
+    const b = s.git("rev-parse", "HEAD");
+    const r = s.run("revert", a, b, "--yes");
+    expect(r.json.data.viaPullRequest).toBe(false);
+    expect(s.exists("a.txt") || s.exists("b.txt")).toBe(false);
+    expect(s.git("log", "-1", "--format=%s")).toBe("Revert 2 saves");
+  });
+
+  test("revert --pr finds the merge of a pull request", () => {
+    const s = new Sandbox().init();
+    s.git("switch", "-q", "-c", "feat");
+    s.write("f.txt", "f");
+    s.run("done", "feature f");
+    s.git("switch", "-q", "main");
+    s.git("merge", "--no-ff", "-q", "-m", "Merge pull request #42 from me/feat", "feat");
+    const r = s.run("revert", "--pr", "42", "--yes");
+    expect(r.json.ok).toBe(true);
+    expect(r.json.data.reverted[0].merge).toBe(true);
+    expect(s.exists("f.txt")).toBe(false);
+    expect(s.run("revert", "--pr", "7", "--yes").json.error.code).toBe("pr_not_found");
+  });
+
+  test("no target without a terminal lists choices", () => {
+    const s = new Sandbox().init();
+    const r = s.run("revert");
+    expect(r.json.error.code).toBe("needs_choice");
+    expect(r.json.data.choices.length).toBeGreaterThan(0);
+  });
+});

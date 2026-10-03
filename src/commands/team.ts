@@ -302,7 +302,7 @@ define({
     if (action !== "reword" && action !== "drop") fail(`I don't know how to "${action}". Try squash, reword, drop or edit.`);
     if (!target) fail(`Which save? Give its id: gitbuddy tidy ${action} <id>`);
     const commit = resolveWhen(target);
-    if (isPushed(commit)) fail("That save was already sent, so I won't change it.", { code: "already_pushed", hint: "Use gitbuddy reverse <id> to cancel it with a new save." });
+    if (isPushed(commit)) fail("That save was already sent, so I won't change it.", { code: "already_pushed", hint: "Use gitbuddy revert <id> to cancel it with a new save." });
     const message = rest.join(" ").trim();
     if (action === "reword" && !message) fail('Give the new message: gitbuddy tidy reword <id> "new message"');
     const old = out(["log", "-1", "--format=%s", commit]);

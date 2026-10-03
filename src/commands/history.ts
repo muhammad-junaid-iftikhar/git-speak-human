@@ -339,7 +339,7 @@ define({
     ui.blank();
     ui.say("search", c.bold(`Found it! It broke in "${msg}"`) + c.dim(` ${id}`));
     ui.line(`   by ${c.accent(who)}, ${ago(date)} · changed ${files.slice(0, 5).join(", ")}${files.length > 5 ? "…" : ""}`);
-    ui.next(`gitbuddy reverse ${id}`, "undo just that save");
+    ui.next(`gitbuddy revert ${id}`, "undo just that save");
     ctx.data = { culprit, id, message: msg, author: who, date, files };
   },
 });

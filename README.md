@@ -65,7 +65,7 @@ gitbuddy share --branch feature/login    # …or send and open a pull request in
 gitbuddy compare                         # what's only here, what's only on GitHub
 gitbuddy catch-up                        # bring the latest main into your branch
 gitbuddy match-remote                    # make your copy exactly GitHub's (extra work kept aside)
-gitbuddy view a1b2c3d                    # look inside a save, then reverse/unsave it
+gitbuddy view a1b2c3d                    # look inside a save, then revert/unsave it
 ```
 
 ## You can't break it
@@ -73,7 +73,7 @@ gitbuddy view a1b2c3d                    # look inside a save, then reverse/unsa
 - **Snapshot before every change.** `gitbuddy undo` reverses any gitbuddy action; `gitbuddy undo --list` shows them all; `gitbuddy redo` puts it back.
 - **`gitbuddy rescue`** finds work you thought was lost: dropped stashes, rewritten saves, old snapshots.
 - **Secrets guard.** `.env` files, private keys and API tokens are blocked before they're saved or sent.
-- **Sent saves are protected.** gitbuddy won't rewrite history your team already has; it offers `gitbuddy reverse` instead.
+- **Sent saves are protected.** gitbuddy won't rewrite history your team already has; it offers `gitbuddy revert` instead.
 - **`gitbuddy doctor`** checks git, your login, the remote and big files.
 
 ## Everything else
@@ -85,7 +85,7 @@ gitbuddy view a1b2c3d                    # look inside a save, then reverse/unsa
 | Workspaces | `work` · `switch` · `list` · `save` · `peek` · `rename` · `drop` |
 | Safety | `undo` · `redo` · `rescue` · `trash` · `restore` · `doctor` |
 | History | `history` · `view <save>` · `who file:42` · `find "text"` · `go-back file to yesterday` · `time-travel "last week"` · `back` · `when-broke` |
-| Fixing | `throw-away` · `unsave` · `reverse` · `ignore` · `forget-file` |
+| Fixing | `throw-away` · `unsave` · `revert` (`--pr 42`) · `ignore` · `forget-file` |
 | Teamwork | `conflicts` · `keep mine/theirs/both` · `continue` · `abort` · `share` (`--branch`) · `review 42` · `combine` · `grab` · `tidy` · `branches` |
 | Releases | `release 1.2.0` · `versions` · `clean-up` · `git <anything>` |
 | You | `me` · `setup` · `config` · `learn` · `completion` · `prompt` · `update` |

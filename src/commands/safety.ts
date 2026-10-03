@@ -79,7 +79,7 @@ define({
     if (pushedSince(entry) && !opts.force) {
       fail("Some of those saves were already sent to your team, so undoing them here would get confusing.", {
         code: "already_pushed",
-        hint: "Reverse a sent save safely with: gitbuddy reverse <save>   (or add --force if you're sure)",
+        hint: "Reverse a sent save safely with: gitbuddy revert <save>   (or add --force if you're sure)",
       });
     }
     const label = entry.label.replace(/^before /, "");
