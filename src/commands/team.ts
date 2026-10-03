@@ -33,11 +33,12 @@ define({
   args: [{ name: "title", description: "A title for the request (default: from your saves)", variadic: true }],
   options: {
     draft: { type: "boolean", description: "Open it as a draft" },
+    branch: { type: "string", short: "b", description: "Name of the branch to put your saves on (default: made from the title)" },
     base: { type: "string", description: "Which branch it should go into (default: main)" },
   },
   mutates: true,
   network: true,
-  examples: ['gitbuddy share "Add dark mode"', "gitbuddy share --draft"],
+  examples: ['gitbuddy share "Add dark mode"', "gitbuddy share --branch feature/dark-mode", "gitbuddy share --draft"],
   async run({ args, opts }) {
     const remote = mainRemote();
     if (!remote) fail("Connect this project to GitHub/GitLab first.", { exit: EXIT.SETUP, code: "no_remote", hint: "gitbuddy connect --github" });
@@ -53,8 +54,17 @@ define({
     const title = args.join(" ").trim() || (commits.length === 1 ? commits[0].message : commits[commits.length - 1].message);
     record("share", `before sharing "${title}"`);
     let movedFromBase = false;
+    const wanted = opts.branch ? String(opts.branch).replace(/^refs\/heads\//, "") : null;
+    if (wanted && !git(["check-ref-format", "--branch", wanted], { allowFail: true }).ok) {
+      fail(`"${wanted}" isn't a valid branch name.`, { code: "bad_branch", hint: "Use letters, numbers, - and /, e.g. feature/login" });
+    }
+    if (wanted && branch !== base && wanted !== branch) {
+      git(["branch", "-q", "-m", wanted], { mutates: true });
+      branch = wanted;
+    }
     if (branch === base) {
-      const newBranch = uniqueBranch(`share/${slugify(title).slice(0, 40)}`);
+      if (wanted && tryOut(["rev-parse", "-q", "--verify", `refs/heads/${wanted}`])) fail(`You already have a branch called "${wanted}".`, { code: "bad_branch" });
+      const newBranch = wanted ?? uniqueBranch(`share/${slugify(title).slice(0, 40)}`);
       git(["switch", "-q", "-c", newBranch], { mutates: true });
       if (baseRef !== base) git(["branch", "-f", base, baseRef], { mutates: true });
       branch = newBranch;

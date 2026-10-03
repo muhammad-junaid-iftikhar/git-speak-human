@@ -42,6 +42,7 @@ Then type `gitbuddy` on its own to get a friendly menu, or `gitbuddy learn` for 
 | See all your tasks | `gitbuddy list` |
 | Undo whatever you just did | `gitbuddy undo` |
 | Fix clashing changes | `gitbuddy conflicts` |
+| Check you're exactly in sync with GitHub | `gitbuddy compare` |
 
 ## Juggle tasks without branches
 
@@ -54,6 +55,18 @@ gitbuddy switch "dark mode"    # exactly where you left it
 ```
 
 Each workspace remembers its own changes, including new files. Everything stays on `main`. When you're ready, `gitbuddy done` saves it and `gitbuddy share` opens a pull request.
+
+## Branches when you want them
+
+```bash
+gitbuddy done "Fix login" --pick         # choose which files go into this save
+gitbuddy send --branch feature/login     # send your saves to a branch (you stay on main)
+gitbuddy share --branch feature/login    # …or send and open a pull request in one go
+gitbuddy compare                         # what's only here, what's only on GitHub
+gitbuddy catch-up                        # bring the latest main into your branch
+gitbuddy match-remote                    # make your copy exactly GitHub's (extra work kept aside)
+gitbuddy view a1b2c3d                    # look inside a save, then reverse/unsave it
+```
 
 ## You can't break it
 
@@ -68,12 +81,12 @@ Each workspace remembers its own changes, including new files. Everything stays 
 | Area | Commands |
 |---|---|
 | Start | `new` · `copy <url>` · `connect <url>` · `connect --github` |
-| Everyday | `show` · `diff` · `done` · `send` · `get` · `sync` · `fix-last` |
+| Everyday | `show` · `diff` · `done` (`--pick`, `--only`) · `send` (`--branch`) · `get` · `sync` · `compare` · `catch-up` · `match-remote` · `fix-last` |
 | Workspaces | `work` · `switch` · `list` · `save` · `peek` · `rename` · `drop` |
 | Safety | `undo` · `redo` · `rescue` · `trash` · `restore` · `doctor` |
-| History | `history` · `who file:42` · `find "text"` · `go-back file to yesterday` · `time-travel "last week"` · `back` · `when-broke` |
+| History | `history` · `view <save>` · `who file:42` · `find "text"` · `go-back file to yesterday` · `time-travel "last week"` · `back` · `when-broke` |
 | Fixing | `throw-away` · `unsave` · `reverse` · `ignore` · `forget-file` |
-| Teamwork | `conflicts` · `keep mine/theirs/both` · `continue` · `abort` · `share` · `review 42` · `combine` · `grab` · `tidy` · `branches` |
+| Teamwork | `conflicts` · `keep mine/theirs/both` · `continue` · `abort` · `share` (`--branch`) · `review 42` · `combine` · `grab` · `tidy` · `branches` |
 | Releases | `release 1.2.0` · `versions` · `clean-up` · `git <anything>` |
 | You | `me` · `setup` · `config` · `learn` · `completion` · `prompt` · `update` |
 

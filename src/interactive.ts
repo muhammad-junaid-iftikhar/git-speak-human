@@ -59,11 +59,14 @@ function choices(): { summary: string; items: Choice[] } {
   }
   if (st.files.length && !st.conflicted.length) {
     items.push({ icon: "💾", label: "Save my changes for good", argv: asking(`What did you do? ${c.dim("(empty = I'll suggest)")}`, (a) => (a ? ["done", a] : ["done"]), true) });
+    if (st.files.length > 1) items.push({ icon: "🧺", label: "Save only some files (pick them)", argv: asking(`What did you do? ${c.dim("(empty = I'll suggest)")}`, (a) => (a ? ["done", a, "--pick"] : ["done", "--pick"]), true) });
     items.push({ icon: "👀", label: "See what I changed", argv: () => ["diff"] });
     items.push({ icon: "📌", label: "Keep a checkpoint (not permanent)", argv: () => ["save"] });
   }
   if (st.ahead) items.push({ icon: "📤", label: "Send my saves to the team", argv: () => ["send"] });
   if (st.behind || tryOut(["remote"])) items.push({ icon: "📥", label: "Get the team's latest work", argv: () => ["get"] });
+  if (tryOut(["remote"])) items.push({ icon: "🔍", label: "Check I'm in sync with GitHub", argv: () => ["compare"] });
+  if (st.oid) items.push({ icon: "🔎", label: "Look inside my last save", argv: () => ["view"] });
   items.push({ icon: "🧩", label: "Start something new", argv: asking("What are you working on?", (a) => ["work", a]) });
   if (others.length) items.push({ icon: "🔄", label: `Switch to another task (${others.length})`, argv: () => ["switch"] });
   items.push({ icon: "📜", label: "What happened recently", argv: () => ["history"] });

@@ -12,6 +12,12 @@ For people who already know git. Every gitbuddy command is plain git underneath.
 | `git add -A && git commit -m` | `gitbuddy done "msg"` | secrets/large-file guard, message suggestion, undoable |
 | `git commit --amend` | `gitbuddy fix-last` | refuses if already pushed (unless `--force`) |
 | `git push` | `gitbuddy send` | sets upstream, scans outgoing commits for secrets |
+| `git push origin HEAD:feature/x` | `gitbuddy send --branch feature/x` | stays on your current branch |
+| `git add -p` / pick files + commit | `gitbuddy done "msg" --pick` | numbered file picker; `--only <file>` for scripts |
+| `git fetch && git status -sb` + logs | `gitbuddy compare` | lists saves only local / only remote, "100% in sync" check |
+| `git fetch && git rebase origin/main` | `gitbuddy catch-up` | merges instead if your saves were already pushed |
+| `git fetch && git reset --hard origin/<b>` | `gitbuddy match-remote` | parks unsaved work in a workspace, unsent saves on a backup branch, undoable |
+| `git show <rev>` | `gitbuddy view <id\|last>` | files, sent or not, and how to revert it |
 | `git push --force-with-lease` | `gitbuddy send --force` | asks first |
 | `git pull --rebase --autostash` | `gitbuddy get` | snapshot first, conflicts explained |
 | pull + push | `gitbuddy sync` | |

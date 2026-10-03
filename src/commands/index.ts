@@ -6,6 +6,7 @@ import "./history";
 import "./fix";
 import "./conflicts";
 import "./team";
+import "./remote";
 import "./release";
 import "./agent";
 import "./you";

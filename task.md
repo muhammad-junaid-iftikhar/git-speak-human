@@ -97,6 +97,13 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [x] `gitbuddy ignore <file|pattern>`: add to .gitignore and untrack if already tracked
 - [x] `gitbuddy forget-file`: remove a secret from history (guided `filter-repo`, with big warnings)
 
+- [x] `gitbuddy done --pick`: choose files for a save (save commit by commit)
+- [x] `gitbuddy view <save>`: look inside one save (files, sent or not, how to revert)
+- [x] `gitbuddy compare`: fetch, then show saves only local / only on remote, "100% in sync" check; `show` lists unsent saves
+- [x] `gitbuddy catch-up`: bring the latest origin/main into the current branch
+- [x] `gitbuddy match-remote`: make the branch exactly like the remote, keeping extra work aside
+- [x] `gitbuddy send --branch <name>` / `gitbuddy share --branch <name>`
+
 **Teamwork**
 - [x] Conflict helper: list conflicted files, show "yours vs theirs" side by side, choose per file or open the editor, then continue
 - [x] `gitbuddy share`: open a PR/MR (GitHub `gh`, GitLab `glab`) with a title and body made from the commits

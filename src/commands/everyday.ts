@@ -20,7 +20,8 @@ import {
 } from "../repo";
 import { record } from "../snapshot";
 import { readState } from "../state";
-import { c, plural, ui } from "../ui";
+import { ago, c, plural, ui } from "../ui";
+import { logEntries } from "./history";
 import { ARCHIVE_REF, activeWorkspace, moveWorkspaceRef } from "../workspaces";
 
 const KIND_LABEL: Record<FileChange["kind"], (s: string) => string> = {
@@ -75,7 +76,20 @@ define({
     if (ws) ui.say("work", `Workspace: ${c.accent(ws.name)}`);
     if (op) ui.say("conflict", c.warn(`A ${op} is in progress. See: gitbuddy conflicts`));
 
+    const remote = mainRemote();
+    const unsentRange = st.upstream ? ["@{u}..HEAD"] : st.oid && remote ? ["HEAD", "--not", `--remotes=${remote}`] : null;
+    const unsent = unsentRange ? logEntries([...unsentRange, "-n6"]) : [];
+    ctx.data.unsent = unsent.map((e) => ({ id: e.id, commit: e.commit, message: e.message, date: e.date }));
+    if (unsent.length) {
+      ui.blank();
+      ui.line(c.dim("   Saved but not sent yet:"));
+      for (const e of unsent.slice(0, 5)) ui.line(`   ${c.accent(e.id)}  ${e.message}  ${c.dim(ago(e.date))}`);
+      if (unsent.length > 5) ui.hint("…and more (gitbuddy compare shows everything)");
+      ui.hint("Look inside one: gitbuddy view <id>");
+    }
+
     if (st.clean) {
+      ui.blank();
       ui.say("clean", "Everything is saved. Nothing new here.");
       if (st.ahead) ui.next("gitbuddy send", "share your saves");
       else if (st.behind) ui.next("gitbuddy get", "grab your team's work");
@@ -127,6 +141,34 @@ define({
   },
 });
 
+function parsePicks(raw: string, max: number): number[] | null {
+  const text = raw.trim().toLowerCase();
+  if (text === "all" || text === "a") return Array.from({ length: max }, (_, i) => i);
+  const picked = new Set<number>();
+  for (const part of text.split(/[\s,]+/).filter(Boolean)) {
+    const range = part.match(/^(\d+)-(\d+)$/);
+    const nums = range ? Array.from({ length: Number(range[2]) - Number(range[1]) + 1 }, (_, i) => Number(range[1]) + i) : [Number(part)];
+    for (const n of nums) {
+      if (!Number.isInteger(n) || n < 1 || n > max) return null;
+      picked.add(n - 1);
+    }
+  }
+  return picked.size ? [...picked].sort((a, b) => a - b) : null;
+}
+
+function pickFiles(files: FileChange[]): string[] {
+  if (!files.length) return [];
+  if (!ctx.interactive) fail("--pick needs a person to choose. Use --only <file> instead.", { code: "needs_choice", hint: 'Example: gitbuddy done "msg" --only src/app.ts' });
+  ui.line(c.bold("Which files go into this save?"));
+  ui.table(files.map((f, i) => [c.accent(String(i + 1).padStart(2)), KIND_LABEL[f.kind](f.kind), f.from ? `${f.from} → ${f.path}` : f.path]));
+  for (;;) {
+    const raw = prompt(c.dim('   numbers like "1 3" or "2-4", or "all" ›'));
+    if (raw === null) fail("Cancelled.");
+    const picks = parsePicks(raw!, files.length);
+    if (picks) return picks.flatMap((i) => (files[i].from ? [files[i].from!, files[i].path] : [files[i].path]));
+  }
+}
+
 function archiveIfFinished(): string | null {
   const ws = activeWorkspace();
   if (!ws || isDirty()) return null;
@@ -143,17 +185,19 @@ define({
   args: [{ name: "message", description: "A short message about what you did", variadic: true }],
   options: {
     only: { type: "list", description: "Only save these files (repeat for more)" },
+    pick: { type: "boolean", short: "p", description: "Choose which files go into this save from a list" },
     "allow-secrets": { type: "boolean", description: "Save even if it looks like a password or key is inside" },
   },
   mutates: true,
   undoable: true,
-  examples: ['gitbuddy done "Fix the login button"', 'gitbuddy done "Update docs" --only README.md'],
+  examples: ['gitbuddy done "Fix the login button"', 'gitbuddy done "Update docs" --only README.md', 'gitbuddy done "Just the fix" --pick'],
   run({ args, opts }) {
     ensureIdentity();
     if (readState().away) fail("You're looking at the past right now, so you can't save here.", { hint: "Go back first: gitbuddy back" });
     let st = status();
     if (st.conflicted.length) fail("Some files still have clashes to sort out first.", { exit: EXIT.CONFLICT, code: "conflict", hint: "See them: gitbuddy conflicts" });
-    const only = (opts.only as string[] | undefined) ?? [];
+    let only = (opts.only as string[] | undefined) ?? [];
+    if (opts.pick) only = pickFiles(st.files);
     const pick = (files: FileChange[]) => (only.length ? files.filter((f) => only.some((o) => f.path === o || f.path.startsWith(o.replace(/\/?$/, "/")))) : files);
     if (!pick(st.files).length) {
       ui.say("clean", only.length ? "Those files have no changes to save." : "Nothing new to save. Everything is already saved.");
@@ -198,7 +242,7 @@ function upstreamTarget(branch: string): { remote: string; ref: string } | null 
   return remote && merge ? { remote, ref: merge } : null;
 }
 
-function requireRemote(): string {
+export function requireRemote(): string {
   const remote = mainRemote();
   if (!remote) {
     fail("This project isn't connected to a remote (like GitHub) yet.", {
@@ -210,7 +254,7 @@ function requireRemote(): string {
   return remote!;
 }
 
-function requireBranch(): string {
+export function requireBranch(): string {
   const branch = currentBranch();
   if (readState().away || !branch) {
     fail("You're looking at an old save right now.", { code: "detached", hint: "Go back first: gitbuddy back" });
@@ -218,7 +262,7 @@ function requireBranch(): string {
   return branch!;
 }
 
-export async function sendWork(opts: { allowSecrets?: boolean; force?: boolean } = {}): Promise<void> {
+export async function sendWork(opts: { allowSecrets?: boolean; force?: boolean; toBranch?: string } = {}): Promise<void> {
   const remote = requireRemote();
   const branch = requireBranch();
   if (!head()) fail("There's nothing saved yet to send.", { hint: 'Save first: gitbuddy done "first save"' });
@@ -227,6 +271,27 @@ export async function sendWork(opts: { allowSecrets?: boolean; force?: boolean }
   const ahead = target
     ? aheadBehind()?.ahead ?? 0
     : Number(out(["rev-list", "--count", "HEAD", "--not", `--remotes=${remote}`]));
+  if (opts.toBranch) {
+    const name = opts.toBranch.replace(/^refs\/heads\//, "");
+    if (!git(["check-ref-format", "--branch", name], { allowFail: true }).ok) {
+      fail(`"${name}" isn't a valid branch name.`, { code: "bad_branch", hint: "Use letters, numbers, - and /, e.g. feature/login" });
+    }
+    const remoteRef = `refs/remotes/${remote}/${name}`;
+    const exists = Boolean(tryOut(["rev-parse", "-q", "--verify", remoteRef]));
+    const range = exists ? [`${remoteRef}..HEAD`] : ["HEAD", "--not", `--remotes=${remote}`];
+    const count = Number(out(["rev-list", "--count", ...range]));
+    if (exists && count === 0) {
+      ui.say("clean", `${remote}/${name} already has all your saves.`);
+      ctx.data = { sent: 0, remote, branch: name };
+      return;
+    }
+    enforce(scanOutgoing(range), { allow: Boolean(opts.allowSecrets), stage: "send" });
+    await ui.spin(`${c.accent("Sending")} ${plural(count, "save")} to ${remote}/${name}…`, () => gitAsync(["push", remote, `HEAD:refs/heads/${name}`], { mutates: true }));
+    ui.say("send", c.ok(`Sent ${plural(count, "save")} to ${remote}/${name}`) + c.dim(` · you're still on ${branch}`));
+    ui.next(`gitbuddy share --branch ${name}`, "ask your team to review it");
+    ctx.data = { sent: count, remote, branch: name, from: branch };
+    return;
+  }
   if (opts.force) {
     if (!ui.confirm("Overwrite the remote with your history? Saves only on the remote will be lost.", { default: false })) return;
     const args = target ? ["push", "--force-with-lease", target.remote, `HEAD:${target.ref}`] : ["push", "--force-with-lease", "-u", remote, branch];
@@ -297,13 +362,14 @@ define({
   summary: "Send your saves to your team (GitHub, GitLab…)",
   gitEquivalent: "git push",
   options: {
+    branch: { type: "string", short: "b", description: "Send to this branch on the remote (created if new), e.g. feature/login" },
     "allow-secrets": { type: "boolean", description: "Send even if a save looks like it contains a secret" },
     force: { type: "boolean", description: "Overwrite the remote with your history (after forget-file or tidy)" },
   },
   mutates: true,
   network: true,
-  examples: ["gitbuddy send"],
-  run: ({ opts }) => sendWork({ allowSecrets: Boolean(opts["allow-secrets"]), force: Boolean(opts.force) }),
+  examples: ["gitbuddy send", "gitbuddy send --branch feature/login"],
+  run: ({ opts }) => sendWork({ allowSecrets: Boolean(opts["allow-secrets"]), force: Boolean(opts.force), toBranch: opts.branch as string | undefined }),
 });
 
 define({
