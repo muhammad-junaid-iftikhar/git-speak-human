@@ -52,7 +52,6 @@ The main idea: users see **workspaces**, not branches or stashes.
 - [x] `gitbuddy rename`, `gitbuddy drop` (asks first; dropped items go to the trash for 30 days), `gitbuddy peek "name"` (see a workspace's diff without switching).
 - [x] `gitbuddy get` while you have unsaved work: snapshot → pull → reapply. Conflicts are explained, never silently lost.
 - [x] `gitbuddy done` inside a workspace: commit to main, then archive the workspace.
-- [ ] Optional mode, `gitbuddy config workspaces=branches`: back workspaces with real branches for teams that use PRs. Same commands for the user.
 - [x] Auto-save (optional): `gitbuddy config set autosave_minutes 10` snapshots the active workspace on any gitbuddy command once N minutes have passed.
 
 ## Phase 3 — Safety net: you can't break it (P1)
@@ -144,10 +143,8 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 
 ## Phase 7 — Distribution: install once, it just works (P1)
 
-- [ ] **Needs you:** create an npm token, add it as the `NPM_TOKEN` secret and set the repo variable `PUBLISH_NPM=true`; the release workflow then publishes on every tag. Publish to npm under a free name (check whether `gitbuddy` is taken; fallback `@<scope>/gitbuddy` or `gitbuddy-cli`). Install with `bun add -g` or `npm i -g`.
 - [x] Single-file binaries with `bun build --compile` for macOS (arm64/x64), Linux (x64/arm64) and Windows, attached to GitHub Releases.
 - [x] One-line installer: `curl -fsSL https://…/install.sh | sh` (and a PowerShell version).
-- [ ] Homebrew tap, Scoop bucket, AUR (P2).
 - [x] `gitbuddy update`: self-update, with a gentle "new version available" notice at most once a day.
 - [x] Release automation: tag → CI builds binaries → GitHub Release → npm publish.
 
@@ -156,7 +153,6 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [x] README rewrite: install line, top commands, "for git pros" cheatsheet. (10-second GIF still to record.)
 - [x] `gitbuddy learn`: optional 5-minute interactive tutorial in a sandbox repo.
 - [x] Cheatsheet page (git ↔ gitbuddy) in CHEATSHEET.md. (Docs site: later.)
-- [ ] Translations of all messages (start with en, es, de, ur, hi, ar, pt, zh). Strings go in `src/i18n/`.
 - [x] LICENSE file (MIT), CONTRIBUTING.md, issue templates, CODE_OF_CONDUCT.
 - [ ] Opt-in, anonymous usage stats only if ever needed. Off by default.
 
@@ -195,7 +191,39 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [x] `gitbuddy theme random` and `gitbuddy theme daily on`: a new look every day for people who get bored.
 - [x] Built-in themes: `juni` (your current setup), dracula, nord, tokyo-night, catppuccin-mocha, gruvbox, solarized-dark, synthwave, rose-pine, pirate.
 - [x] Community themes: anyone adds `themes/<name>.json` by PR (guide in CONTRIBUTING.md, validated in CI). `gitbuddy theme --online` lists the latest from GitHub.
-- [ ] Later: iTerm2, Ghostty, Warp, Windows Terminal, GNOME Terminal backends.
+
+## Phase 10 — Next up (in this order)
+
+**0. Try it for real (needs you)**
+- [ ] Run `gitbuddy theme dracula` in Terminal.app; check colors, font, open windows restyled, and that `gitbuddy theme juni` brings your setup back. If macOS asks "Terminal wants to control Terminal", click Allow.
+- [ ] Use `gitbuddy send` on a repo whose `main` is protected; it should open a PR instead of failing.
+- [ ] Try `gitbuddy try <branch>`, `gitbuddy revert --pr <n>` and `gitbuddy compare` on a real team repo and report anything odd.
+- [ ] Upgrade Bun (`bun upgrade`); 1.0.1 caches stale GitHub installs.
+
+**1. Homebrew**
+- [ ] Create a `homebrew-gitbuddy` tap repo with a formula that downloads the release binaries (arm64 + x64) and checks checksums.
+- [ ] Release workflow updates the formula's version and checksums on every tag.
+- [ ] README: `brew install muhammad-junaid-iftikhar/gitbuddy/gitbuddy`.
+- [ ] Later: Scoop bucket (Windows) and AUR (Arch Linux).
+
+**2. VS Code side panel**
+- [ ] Extension that lists workspaces (switch with one click), saves not sent yet, and "in sync with GitHub" status, using `gitbuddy state --json`.
+- [ ] Buttons for done / send / get / undo, and a status-bar item showing the active workspace.
+- [ ] Publish to the VS Code Marketplace and Open VSX.
+
+**3. Themes for other terminals**
+- [ ] iTerm2 backend (Dynamic Profiles JSON, no AppleScript needed).
+- [ ] Ghostty backend (config file theme).
+- [ ] Then: Warp, Windows Terminal, GNOME Terminal. Same theme JSON for all.
+
+**4. npm publishing (needs you)**
+- [ ] Create an npm token, add it as the `NPM_TOKEN` secret and set the repo variable `PUBLISH_NPM=true`; the release workflow then publishes on every tag. Check whether `gitbuddy` is free on npm (fallback `@<scope>/gitbuddy` or `gitbuddy-cli`). Install with `bun add -g` or `npm i -g`.
+
+**5. Later**
+- [ ] Optional mode, `gitbuddy config workspaces=branches`: back workspaces with real branches for teams that use PRs. Same commands for the user.
+- [ ] Arrow-key menus and pickers (fall back to numbers when the terminal can't do it).
+- [ ] Translations of all messages (start with en, es, de, ur, hi, ar, pt, zh). Strings go in `src/i18n/`.
+- [ ] 10-second demo GIF for the README.
 
 ---
 
