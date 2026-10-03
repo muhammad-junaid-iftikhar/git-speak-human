@@ -163,10 +163,10 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 ## Phase 9 — Everyday pain points from real use (P0)
 
 **1. Push/pull clashes and protected main**
-- [ ] `send` first checks the remote. If teammates pushed to the same branch, it gets their saves, puts yours on top (snapshot first), then sends. No more "rejected, fetch first".
-- [ ] If the push is still rejected because someone pushed in between, retry automatically once.
-- [ ] Protected branches: if the remote refuses a push to `main` (protected branch), move your saves to a new branch, send it, open a PR, and reset local `main` to match the remote, all in one go.
-- [ ] `gitbuddy config set protected main,develop`: treat these as protected up front, so `send` goes straight to the PR flow.
+- [x] `send` first checks the remote. If teammates pushed to the same branch, it gets their saves, puts yours on top (snapshot first), then sends. No more "rejected, fetch first".
+- [x] If the push is still rejected because someone pushed in between, retry automatically once.
+- [x] Protected branches: if the remote refuses a push to `main` (protected branch), move your saves to a new branch, send it, open a PR, and reset local `main` to match the remote, all in one go.
+- [x] `gitbuddy protect main`: treat a branch as protected up front, so `send` goes straight to the PR flow (also learned automatically after a refusal).
 
 **2. Try someone else's branch without touching your work**
 - [ ] `gitbuddy try <branch>`: fetch it, make a local copy, tuck your unsaved work away and switch to the copy. `gitbuddy back` returns you exactly where you were.

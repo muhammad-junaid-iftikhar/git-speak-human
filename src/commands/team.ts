@@ -24,6 +24,74 @@ function uniqueBranch(base: string): string {
   for (let i = 2; ; i++) if (!tryOut(["rev-parse", "-q", "--verify", `refs/heads/${base}-${i}`])) return `${base}-${i}`;
 }
 
+export function openPullRequest(o: { title: string; body: string; base: string; branch: string; draft?: boolean }): string | null {
+  const remote = mainRemote();
+  const url = remote ? remoteUrl(remote) ?? "" : "";
+  const kind = host(url);
+  let link: string | null = null;
+  const tool = kind === "github" ? Bun.which("gh") : kind === "gitlab" ? Bun.which("glab") : null;
+  if (tool && !ctx.flags.dryRun) {
+    const cmd =
+      kind === "github"
+        ? ["pr", "create", "--title", o.title, "--body", o.body, "--base", o.base, "--head", o.branch, ...(o.draft ? ["--draft"] : [])]
+        : ["mr", "create", "--title", o.title, "--description", o.body, "--target-branch", o.base, "--source-branch", o.branch, "--yes", ...(o.draft ? ["--draft"] : [])];
+    const p = Bun.spawnSync([tool, ...cmd], { stdout: "pipe", stderr: "pipe" });
+    const said = `${p.stdout}${p.stderr}`;
+    link = said.match(/https?:\/\/\S+/)?.[0] ?? null;
+    if (p.exitCode !== 0 && !link) ui.warn(`Couldn't open the request automatically: ${said.trim().split("\n")[0]}`);
+  }
+  if (!link) {
+    const web = webBase(url);
+    if (web) link = kind === "gitlab" ? `${web}/-/merge_requests/new?merge_request[source_branch]=${encodeURIComponent(o.branch)}` : `${web}/compare/${o.base}...${encodeURIComponent(o.branch)}?expand=1`;
+  }
+  return link;
+}
+
+export function validBranchName(name: string): string {
+  const clean = name.replace(/^refs\/heads\//, "");
+  if (!git(["check-ref-format", "--branch", clean], { allowFail: true }).ok) {
+    fail(`"${clean}" isn't a valid branch name.`, { code: "bad_branch", hint: "Use letters, numbers, - and /, e.g. feature/login" });
+  }
+  return clean;
+}
+
+export async function shareWork(o: { title?: string; branch?: string; base?: string; draft?: boolean; reason?: string } = {}): Promise<void> {
+  const remote = mainRemote();
+  if (!remote) fail("Connect this project to GitHub/GitLab first.", { exit: EXIT.SETUP, code: "no_remote", hint: "gitbuddy connect --github" });
+  const base = o.base ?? defaultBranch();
+  let branch = currentBranch();
+  if (!branch || readState().away) fail("Come back to the present first.", { hint: "gitbuddy back" });
+  await ui.spin("Checking with your team…", () => gitAsync(["fetch", "-q", remote!], { mutates: true }));
+  const baseRef = tryOut(["rev-parse", "-q", "--verify", `refs/remotes/${remote}/${base}`]) ? `${remote}/${base}` : base;
+  const commits = logEntries([`${baseRef}..HEAD`]);
+  if (!commits.length) fail("You have no saves that your team doesn't already have.", { hint: 'Save something first: gitbuddy done "what you did"' });
+  if (isDirty()) ui.warn("Unsaved changes won't be included.");
+  const title = o.title?.trim() || (commits.length === 1 ? commits[0].message : commits[commits.length - 1].message);
+  record("share", `before sharing "${title}"`);
+  let movedFromBase = false;
+  const wanted = o.branch ? validBranchName(o.branch) : null;
+  if (wanted && branch !== base && wanted !== branch) {
+    git(["branch", "-q", "-m", wanted], { mutates: true });
+    branch = wanted;
+  }
+  if (branch === base) {
+    if (wanted && tryOut(["rev-parse", "-q", "--verify", `refs/heads/${wanted}`])) fail(`You already have a branch called "${wanted}".`, { code: "bad_branch" });
+    const newBranch = wanted ?? uniqueBranch(`share/${slugify(title).slice(0, 40)}`);
+    git(["switch", "-q", "-c", newBranch], { mutates: true });
+    if (baseRef !== base) git(["branch", "-f", base, baseRef], { mutates: true });
+    branch = newBranch;
+    movedFromBase = true;
+  }
+  await ui.spin(`${c.accent("Sending")} ${plural(commits.length, "save")}…`, () => gitAsync(["push", "-q", "-u", remote!, branch!], { mutates: true }));
+  const body = `${commits.map((e) => `- ${e.message}`).reverse().join("\n")}\n\n_Shared with [gitbuddy](https://github.com/muhammad-junaid-iftikhar/git-speak-human)_`;
+  const link = openPullRequest({ title, body, base, branch: branch!, draft: o.draft });
+  if (movedFromBase) git(["switch", "-q", base], { mutates: true });
+  ui.say("share", c.ok(`Shared ${c.bold(`"${title}"`)} for review`) + (o.reason ? c.dim(` · ${o.reason}`) : ""));
+  if (link) ui.line(`   ${c.accent(link)}`);
+  if (movedFromBase) ui.hint(`Your saves went on "${branch}". You're back on ${base} (matching ${remote}); gitbuddy get brings them in once they're accepted.`);
+  ctx.data = { ...ctx.data, title, branch, base, link, commits: commits.map((e) => e.commit), viaPullRequest: true };
+}
+
 define({
   name: "share",
   aliases: ["pr", "propose", "mr"],
@@ -39,62 +107,8 @@ define({
   mutates: true,
   network: true,
   examples: ['gitbuddy share "Add dark mode"', "gitbuddy share --branch feature/dark-mode", "gitbuddy share --draft"],
-  async run({ args, opts }) {
-    const remote = mainRemote();
-    if (!remote) fail("Connect this project to GitHub/GitLab first.", { exit: EXIT.SETUP, code: "no_remote", hint: "gitbuddy connect --github" });
-    const url = remoteUrl(remote!) ?? "";
-    const base = String(opts.base ?? defaultBranch());
-    let branch = currentBranch();
-    if (!branch || readState().away) fail("Come back to the present first.", { hint: "gitbuddy back" });
-    await ui.spin("Checking with your team…", () => gitAsync(["fetch", "-q", remote!], { mutates: true }));
-    const baseRef = tryOut(["rev-parse", "-q", "--verify", `refs/remotes/${remote}/${base}`]) ? `${remote}/${base}` : base;
-    const commits = logEntries([`${baseRef}..HEAD`]);
-    if (!commits.length) fail("You have no saves that your team doesn't already have.", { hint: 'Save something first: gitbuddy done "what you did"' });
-    if (isDirty()) ui.warn("Unsaved changes won't be included.");
-    const title = args.join(" ").trim() || (commits.length === 1 ? commits[0].message : commits[commits.length - 1].message);
-    record("share", `before sharing "${title}"`);
-    let movedFromBase = false;
-    const wanted = opts.branch ? String(opts.branch).replace(/^refs\/heads\//, "") : null;
-    if (wanted && !git(["check-ref-format", "--branch", wanted], { allowFail: true }).ok) {
-      fail(`"${wanted}" isn't a valid branch name.`, { code: "bad_branch", hint: "Use letters, numbers, - and /, e.g. feature/login" });
-    }
-    if (wanted && branch !== base && wanted !== branch) {
-      git(["branch", "-q", "-m", wanted], { mutates: true });
-      branch = wanted;
-    }
-    if (branch === base) {
-      if (wanted && tryOut(["rev-parse", "-q", "--verify", `refs/heads/${wanted}`])) fail(`You already have a branch called "${wanted}".`, { code: "bad_branch" });
-      const newBranch = wanted ?? uniqueBranch(`share/${slugify(title).slice(0, 40)}`);
-      git(["switch", "-q", "-c", newBranch], { mutates: true });
-      if (baseRef !== base) git(["branch", "-f", base, baseRef], { mutates: true });
-      branch = newBranch;
-      movedFromBase = true;
-    }
-    await ui.spin(`${c.accent("Sending")} ${plural(commits.length, "save")}…`, () => gitAsync(["push", "-q", "-u", remote!, branch!], { mutates: true }));
-    const body = `${commits.map((e) => `- ${e.message}`).reverse().join("\n")}\n\n_Shared with [gitbuddy](https://github.com/muhammad-junaid-iftikhar/git-speak-human)_`;
-    let link: string | null = null;
-    const kind = host(url);
-    const tool = kind === "github" ? Bun.which("gh") : kind === "gitlab" ? Bun.which("glab") : null;
-    if (tool && !ctx.flags.dryRun) {
-      const cmd =
-        kind === "github"
-          ? ["pr", "create", "--title", title, "--body", body, "--base", base, "--head", branch!, ...(opts.draft ? ["--draft"] : [])]
-          : ["mr", "create", "--title", title, "--description", body, "--target-branch", base, "--source-branch", branch!, "--yes", ...(opts.draft ? ["--draft"] : [])];
-      const p = Bun.spawnSync([tool, ...cmd], { stdout: "pipe", stderr: "pipe" });
-      const said = `${p.stdout}${p.stderr}`;
-      link = said.match(/https?:\/\/\S+/)?.[0] ?? null;
-      if (p.exitCode !== 0 && !link) ui.warn(`Couldn't open the request automatically: ${said.trim().split("\n")[0]}`);
-    }
-    if (!link) {
-      const web = webBase(url);
-      if (web) link = kind === "gitlab" ? `${web}/-/merge_requests/new?merge_request[source_branch]=${encodeURIComponent(branch!)}` : `${web}/compare/${base}...${encodeURIComponent(branch!)}?expand=1`;
-    }
-    if (movedFromBase) git(["switch", "-q", base], { mutates: true });
-    ui.say("share", c.ok(`Shared ${c.bold(`"${title}"`)} for review`));
-    if (link) ui.line(`   ${c.accent(link)}`);
-    if (movedFromBase) ui.hint(`Your saves went on "${branch}". You're back on ${base}; gitbuddy get brings them in once they're accepted.`);
-    ctx.data = { title, branch, base, link, commits: commits.map((e) => e.commit) };
-  },
+  run: ({ args, opts }) =>
+    shareWork({ title: args.join(" "), branch: opts.branch as string | undefined, base: opts.base as string | undefined, draft: Boolean(opts.draft) }),
 });
 
 define({

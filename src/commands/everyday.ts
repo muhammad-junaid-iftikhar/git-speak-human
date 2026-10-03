@@ -1,6 +1,7 @@
 import { ctx } from "../context";
 import { EXIT, fail } from "../errors";
-import { git, gitAsync, out, tryOut } from "../git";
+import { explainGitFailure, git, gitAsync, out, tryOut } from "../git";
+import { shareWork } from "./team";
 import { enforce, scanOutgoing, scanWorkingFiles } from "../guard";
 import { suggestMessage } from "../message";
 import { define } from "../registry";
@@ -262,13 +263,51 @@ export function requireBranch(): string {
   return branch!;
 }
 
+export function protectedBranches(): string[] {
+  return (tryOut(["config", "--get-all", "gitbuddy.protected"]) ?? "").split("\n").map((b) => b.trim()).filter(Boolean);
+}
+
+const PROTECTED_RE = /protected branch|GH006|pre-receive hook declined|not allowed to push|push to protected|must be made through a pull request|protected_branch|You are not allowed to (force )?push/i;
+const REJECTED_RE = /\[rejected\]|non-fast-forward|fetch first|Updates were rejected/i;
+
+function rebaseOnto(up: string, label: string): void {
+  record("get", label);
+  const r = git(["rebase", "--autostash", "-q", up], { allowFail: true, mutates: true });
+  if (!r.ok || operation() === "rebase") {
+    fail("Your saves and your team's saves changed the same lines.", {
+      exit: EXIT.CONFLICT,
+      code: "conflict",
+      hint: "Let's sort it out: gitbuddy conflicts, then gitbuddy send again   (or cancel: gitbuddy abort)",
+    });
+  }
+  if (/autostash resulted in conflicts/i.test(r.stdout + r.stderr)) ui.warn("Your unsaved changes clash with the new work. They're safe; see: gitbuddy conflicts");
+}
+
+async function protectedFallback(branch: string, why: string): Promise<void> {
+  ui.warn(`${branch} is protected, so changes have to go in through a pull request. Doing that for you…`);
+  await shareWork({ base: branch, reason: why });
+}
+
 export async function sendWork(opts: { allowSecrets?: boolean; force?: boolean; toBranch?: string } = {}): Promise<void> {
   const remote = requireRemote();
   const branch = requireBranch();
   if (!head()) fail("There's nothing saved yet to send.", { hint: 'Save first: gitbuddy done "first save"' });
   if (isDirty()) ui.warn("Some changes aren't saved yet, so they won't be sent.");
   const target = upstreamTarget(branch);
-  const ahead = target
+  if (!opts.force && !opts.toBranch && protectedBranches().includes(branch)) {
+    await protectedFallback(branch, `${branch} is marked as protected`);
+    return;
+  }
+  if (target && !opts.force && !opts.toBranch) {
+    await ui.spin(`${c.accent("Checking")} for new saves from your team…`, () => gitAsync(["fetch", "-q", target.remote], { mutates: true }));
+    const ab = aheadBehind();
+    if (ab && ab.behind > 0) {
+      ui.info(`Your team sent ${plural(ab.behind, "save")} to ${branch} since you last got them. Getting them first, yours go on top…`);
+      rebaseOnto("@{u}", `before putting your saves on top of your team's`);
+      ctx.data.caughtUp = ab.behind;
+    }
+  }
+  let ahead = target
     ? aheadBehind()?.ahead ?? 0
     : Number(out(["rev-list", "--count", "HEAD", "--not", `--remotes=${remote}`]));
   if (opts.toBranch) {
@@ -308,9 +347,22 @@ export async function sendWork(opts: { allowSecrets?: boolean; force?: boolean; 
   const range = target ? ["@{u}..HEAD"] : ["HEAD", "--not", `--remotes=${remote}`];
   enforce(scanOutgoing(range), { allow: Boolean(opts.allowSecrets), stage: "send" });
   const pushArgs = target ? ["push", target.remote, `HEAD:${target.ref}`] : ["push", "-u", remote, branch];
-  await ui.spin(`${c.accent("Sending")} ${plural(ahead, "save")} to ${remote}…`, () => gitAsync(pushArgs, { mutates: true }));
+  let r = await ui.spin(`${c.accent("Sending")} ${plural(ahead, "save")} to ${remote}…`, () => gitAsync(pushArgs, { mutates: true, allowFail: true }));
+  if (!r.ok && REJECTED_RE.test(r.stderr) && !PROTECTED_RE.test(r.stderr) && target) {
+    ui.info("Someone sent new saves at the same moment. Getting them and trying again…");
+    await gitAsync(["fetch", "-q", target.remote], { mutates: true });
+    rebaseOnto("@{u}", "before retrying the send");
+    ahead = aheadBehind()?.ahead ?? ahead;
+    r = await ui.spin(`${c.accent("Sending")} again…`, () => gitAsync(pushArgs, { mutates: true, allowFail: true }));
+  }
+  if (!r.ok && PROTECTED_RE.test(r.stderr)) {
+    git(["config", "--add", "gitbuddy.protected", branch], { mutates: true });
+    await protectedFallback(branch, `${remote} refused direct pushes to ${branch}`);
+    return;
+  }
+  if (!r.ok) throw explainGitFailure(pushArgs, r);
   ui.say("send", c.ok(`Sent ${plural(ahead, "save")} to ${remote}/${target ? target.ref.replace("refs/heads/", "") : branch}`));
-  ctx.data = { sent: ahead, remote, branch };
+  ctx.data = { ...ctx.data, sent: ahead, remote, branch };
 }
 
 export async function getWork(): Promise<number> {
@@ -437,5 +489,34 @@ define({
     git(["commit", "-q", "--amend", ...(message ? ["-m", message] : ["--no-edit"])], { mutates: true });
     ui.ok(message ? `Last save is now called "${message}".` : "Added to your last save.");
     ctx.data = { commit: ctx.flags.dryRun ? "" : out(["rev-parse", "HEAD"]), message: message || null, added: add };
+  },
+});
+
+define({
+  name: "protect",
+  aliases: ["protected"],
+  group: "team",
+  summary: "Mark branches (like main) that only accept pull requests",
+  args: [{ name: "branch", description: "Branch to protect (leave out to see the list)" }],
+  options: { remove: { type: "boolean", description: "Stop treating it as protected" } },
+  mutates: true,
+  examples: ["gitbuddy protect main", "gitbuddy protect", "gitbuddy protect develop --remove"],
+  run({ args, opts }) {
+    const list = protectedBranches();
+    const name = args[0];
+    if (!name) {
+      ctx.data = { protected: list };
+      if (!list.length) ui.say("lock", "No protected branches yet. gitbuddy also learns them when the remote refuses a push.");
+      else ui.say("lock", `Protected: ${list.map((b) => c.bold(b)).join(", ")}. ${c.dim("gitbuddy send turns your saves into a pull request for these.")}`);
+      return;
+    }
+    if (opts.remove) {
+      git(["config", "--unset-all", "gitbuddy.protected", `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`], { mutates: true, allowFail: true });
+      ui.ok(`${name} is no longer treated as protected.`);
+    } else if (!list.includes(name)) {
+      git(["config", "--add", "gitbuddy.protected", name], { mutates: true });
+      ui.say("lock", c.ok(`${name} is protected. gitbuddy send will open a pull request instead of pushing to it.`));
+    } else ui.say("lock", `${name} is already protected.`);
+    ctx.data = { protected: protectedBranches() };
   },
 });

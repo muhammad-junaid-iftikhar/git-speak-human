@@ -103,3 +103,47 @@ describe("branches and remote", () => {
     expect(s.run("done", "x", "--pick").json.error.code).toBe("needs_choice");
   });
 });
+
+describe("send handles team changes and protected branches", () => {
+  test("send gets teammates' saves first, then sends yours on top", () => {
+    const { me, them } = setup();
+    them.write("t.txt", "t");
+    them.run("done", "theirs");
+    them.run("send");
+    me.write("m.txt", "m");
+    me.run("done", "mine");
+    const r = me.run("send");
+    expect(r.json.ok).toBe(true);
+    expect(r.json.data.caughtUp).toBe(1);
+    expect(me.git("log", "--format=%s", "-n3").split("\n")).toEqual(["mine", "theirs", "start"]);
+    expect(me.run("compare").json.data.inSync).toBe(true);
+  });
+
+  test("a protected branch rejection turns into a pull request branch", () => {
+    const { me, bare } = setup();
+    const hook = `${bare}/hooks/pre-receive`;
+    require("node:fs").writeFileSync(hook, '#!/bin/sh\nwhile read old new ref; do [ "$ref" = refs/heads/main ] && { echo "GH006: Protected branch update failed for refs/heads/main." >&2; exit 1; }; done; exit 0\n');
+    require("node:fs").chmodSync(hook, 0o755);
+    me.write("p.txt", "p");
+    me.run("done", "Protected change");
+    const r = me.run("send");
+    expect(r.json.ok).toBe(true);
+    expect(r.json.data.viaPullRequest).toBe(true);
+    expect(r.json.data.branch).toBe("share/protected-change");
+    expect(remoteHas(bare, "refs/heads/share/protected-change")).toBe(true);
+    expect(me.git("branch", "--show-current")).toBe("main");
+    expect(me.git("rev-parse", "main")).toBe(me.git("rev-parse", "origin/main"));
+    expect(me.run("protect").json.data.protected).toEqual(["main"]);
+  });
+
+  test("protect marks a branch up front", () => {
+    const { me, bare } = setup();
+    me.run("protect", "main");
+    me.write("q.txt", "q");
+    me.run("done", "Go via PR");
+    expect(me.run("send").json.data.viaPullRequest).toBe(true);
+    expect(remoteHas(bare, "refs/heads/share/go-via-pr")).toBe(true);
+    me.run("protect", "main", "--remove");
+    expect(me.run("protect").json.data.protected).toEqual([]);
+  });
+});
