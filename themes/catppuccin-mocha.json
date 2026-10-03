@@ -1,0 +1,87 @@
+{
+  "name": "catppuccin-mocha",
+  "title": "Catppuccin Mocha",
+  "author": "gitbuddy",
+  "description": "Soothing pastel on a dark mocha",
+  "terminal": {
+    "background": "#1e1e2e",
+    "foreground": "#cdd6f4",
+    "cursor": "#f5e0dc",
+    "selection": "#585b70",
+    "bold": "#a6adc8",
+    "ansi": [
+      "#45475a",
+      "#f38ba8",
+      "#a6e3a1",
+      "#f9e2af",
+      "#89b4fa",
+      "#f5c2e7",
+      "#94e2d5",
+      "#bac2de",
+      "#585b70",
+      "#f38ba8",
+      "#a6e3a1",
+      "#f9e2af",
+      "#89b4fa",
+      "#f5c2e7",
+      "#94e2d5",
+      "#a6adc8"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 0.97,
+    "blur": 0.2,
+    "cursorShape": "bar",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#585b70",
+    "syntax": {
+      "command": "fg=#a6e3a1",
+      "builtin": "fg=#a6e3a1",
+      "alias": "fg=#94e2d5",
+      "unknown-token": "fg=#f38ba8,bold",
+      "path": "fg=#89b4fa,underline",
+      "single-quoted-argument": "fg=#f9e2af",
+      "double-quoted-argument": "fg=#f9e2af",
+      "comment": "fg=#585b70"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#89b4fa",
+    "ok": "#a6e3a1",
+    "warn": "#f9e2af",
+    "err": "#f38ba8",
+    "dim": "#585b70",
+    "mascot": "🐱"
+  }
+}

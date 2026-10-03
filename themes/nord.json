@@ -1,0 +1,87 @@
+{
+  "name": "nord",
+  "title": "Nord",
+  "author": "gitbuddy",
+  "description": "Calm arctic blues",
+  "terminal": {
+    "background": "#2e3440",
+    "foreground": "#d8dee9",
+    "cursor": "#d8dee9",
+    "selection": "#434c5e",
+    "bold": "#eceff4",
+    "ansi": [
+      "#3b4252",
+      "#bf616a",
+      "#a3be8c",
+      "#ebcb8b",
+      "#81a1c1",
+      "#b48ead",
+      "#88c0d0",
+      "#e5e9f0",
+      "#4c566a",
+      "#bf616a",
+      "#a3be8c",
+      "#ebcb8b",
+      "#81a1c1",
+      "#b48ead",
+      "#8fbcbb",
+      "#eceff4"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 1.0,
+    "blur": 0,
+    "cursorShape": "block",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#4c566a",
+    "syntax": {
+      "command": "fg=#a3be8c",
+      "builtin": "fg=#a3be8c",
+      "alias": "fg=#8fbcbb",
+      "unknown-token": "fg=#bf616a,bold",
+      "path": "fg=#81a1c1,underline",
+      "single-quoted-argument": "fg=#ebcb8b",
+      "double-quoted-argument": "fg=#ebcb8b",
+      "comment": "fg=#4c566a"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#81a1c1",
+    "ok": "#a3be8c",
+    "warn": "#ebcb8b",
+    "err": "#bf616a",
+    "dim": "#4c566a",
+    "mascot": "❄️"
+  }
+}

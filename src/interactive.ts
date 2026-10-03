@@ -5,6 +5,7 @@ import { operation, repoRoot, status } from "./repo";
 import { readState } from "./state";
 import { theme } from "./theme";
 import { c, plural, ui } from "./ui";
+import { maybeDailyTheme } from "./commands/theme";
 import { setupProfile, splitArgs } from "./commands/you";
 import { activeWorkspace, listWorkspaces } from "./workspaces";
 
@@ -107,5 +108,8 @@ async function menu(): Promise<void> {
 
 hooks.noCommand = menu;
 
-hooks.after.push((def, result) => afterCommand(def.name, result.ok, result.data));
+hooks.after.push((def, result) => {
+  afterCommand(def.name, result.ok, result.data);
+  if (def.name !== "theme") void maybeDailyTheme();
+});
 

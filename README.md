@@ -98,6 +98,21 @@ gitbuddy view a1b2c3d                    # look inside a save, then revert/unsav
 
 Type `gitbuddy` alone for a menu that adapts to your project. You get a profile with an avatar, levels, day streaks and 18 achievements (`gitbuddy me`), plus random tips and themes (`gitbuddy config set theme neon|pastel|pirate|mono`). Prefer it quiet? `gitbuddy config set fun false`.
 
+## Terminal themes
+
+Bored of your terminal? One command restyles everything: Terminal.app colors, font, transparency, your Starship prompt, zsh suggestion and syntax colors, history settings, and gitbuddy's own colors.
+
+```bash
+gitbuddy theme                 # pick from the list (with color previews)
+gitbuddy theme tokyo-night     # apply one
+gitbuddy theme random          # surprise me
+gitbuddy theme daily on        # a new look every day
+gitbuddy theme save my-setup   # turn your current setup into a theme you can share
+gitbuddy theme my-original     # back to how it was before gitbuddy
+```
+
+Built in: dracula, nord, tokyo-night, catppuccin-mocha, gruvbox, solarized-dark, rose-pine, synthwave, pirate, juni. Anyone can add more: a theme is one JSON file (see [CONTRIBUTING.md](CONTRIBUTING.md#adding-a-terminal-theme)), and `gitbuddy theme --online` lists the newest from GitHub. Terminal colors currently support macOS Terminal.app; the prompt and shell parts work in any terminal running zsh.
+
 ## For AI agents
 
 gitbuddy is built to be driven by agents too:

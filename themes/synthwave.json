@@ -1,0 +1,87 @@
+{
+  "name": "synthwave",
+  "title": "Synthwave '84",
+  "author": "gitbuddy",
+  "description": "Retro neon, straight out of 1984",
+  "terminal": {
+    "background": "#262335",
+    "foreground": "#ffffff",
+    "cursor": "#ff7edb",
+    "selection": "#463465",
+    "bold": "#ffffff",
+    "ansi": [
+      "#262335",
+      "#fe4450",
+      "#72f1b8",
+      "#fede5d",
+      "#03edf9",
+      "#ff7edb",
+      "#03edf9",
+      "#ffffff",
+      "#614d85",
+      "#fe4450",
+      "#72f1b8",
+      "#f97e72",
+      "#03edf9",
+      "#ff7edb",
+      "#03edf9",
+      "#ffffff"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 0.95,
+    "blur": 0.4,
+    "cursorShape": "block",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#614d85",
+    "syntax": {
+      "command": "fg=#72f1b8",
+      "builtin": "fg=#72f1b8",
+      "alias": "fg=#03edf9",
+      "unknown-token": "fg=#fe4450,bold",
+      "path": "fg=#03edf9,underline",
+      "single-quoted-argument": "fg=#f97e72",
+      "double-quoted-argument": "fg=#f97e72",
+      "comment": "fg=#614d85"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#03edf9",
+    "ok": "#72f1b8",
+    "warn": "#f97e72",
+    "err": "#fe4450",
+    "dim": "#614d85",
+    "mascot": "🕹️"
+  }
+}

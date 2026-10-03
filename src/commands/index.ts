@@ -10,5 +10,6 @@ import "./remote";
 import "./release";
 import "./agent";
 import "./you";
+import "./theme";
 import "./meta";
 import "../interactive";

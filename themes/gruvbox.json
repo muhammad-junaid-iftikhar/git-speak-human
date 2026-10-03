@@ -1,0 +1,87 @@
+{
+  "name": "gruvbox",
+  "title": "Gruvbox Dark",
+  "author": "gitbuddy",
+  "description": "Warm retro groove",
+  "terminal": {
+    "background": "#282828",
+    "foreground": "#ebdbb2",
+    "cursor": "#ebdbb2",
+    "selection": "#504945",
+    "bold": "#ebdbb2",
+    "ansi": [
+      "#282828",
+      "#cc241d",
+      "#98971a",
+      "#d79921",
+      "#458588",
+      "#b16286",
+      "#689d6a",
+      "#a89984",
+      "#928374",
+      "#fb4934",
+      "#b8bb26",
+      "#fabd2f",
+      "#83a598",
+      "#d3869b",
+      "#8ec07c",
+      "#ebdbb2"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 1.0,
+    "blur": 0,
+    "cursorShape": "block",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#928374",
+    "syntax": {
+      "command": "fg=#b8bb26",
+      "builtin": "fg=#b8bb26",
+      "alias": "fg=#8ec07c",
+      "unknown-token": "fg=#fb4934,bold",
+      "path": "fg=#83a598,underline",
+      "single-quoted-argument": "fg=#fabd2f",
+      "double-quoted-argument": "fg=#fabd2f",
+      "comment": "fg=#928374"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#83a598",
+    "ok": "#b8bb26",
+    "warn": "#fabd2f",
+    "err": "#fb4934",
+    "dim": "#928374",
+    "mascot": "🍂"
+  }
+}

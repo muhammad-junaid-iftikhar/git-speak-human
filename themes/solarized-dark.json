@@ -1,0 +1,87 @@
+{
+  "name": "solarized-dark",
+  "title": "Solarized Dark",
+  "author": "gitbuddy",
+  "description": "The classic, easy on the eyes",
+  "terminal": {
+    "background": "#002b36",
+    "foreground": "#839496",
+    "cursor": "#93a1a1",
+    "selection": "#073642",
+    "bold": "#fdf6e3",
+    "ansi": [
+      "#073642",
+      "#dc322f",
+      "#859900",
+      "#b58900",
+      "#268bd2",
+      "#d33682",
+      "#2aa198",
+      "#eee8d5",
+      "#586e75",
+      "#cb4b16",
+      "#859900",
+      "#b58900",
+      "#268bd2",
+      "#6c71c4",
+      "#93a1a1",
+      "#fdf6e3"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 1.0,
+    "blur": 0,
+    "cursorShape": "block",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#586e75",
+    "syntax": {
+      "command": "fg=#859900",
+      "builtin": "fg=#859900",
+      "alias": "fg=#93a1a1",
+      "unknown-token": "fg=#cb4b16,bold",
+      "path": "fg=#268bd2,underline",
+      "single-quoted-argument": "fg=#b58900",
+      "double-quoted-argument": "fg=#b58900",
+      "comment": "fg=#586e75"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#268bd2",
+    "ok": "#859900",
+    "warn": "#b58900",
+    "err": "#cb4b16",
+    "dim": "#586e75",
+    "mascot": "☀️"
+  }
+}

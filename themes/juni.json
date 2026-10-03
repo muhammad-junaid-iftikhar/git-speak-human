@@ -1,0 +1,34 @@
+{
+  "name": "juni",
+  "title": "Juni",
+  "author": "Muhammad Junaid Iftikhar",
+  "description": "Basic Terminal.app, starship 🔥⬢📱 prompt, atuin history, autosuggestions, eza icons",
+  "terminal": {
+    "baseProfile": "Basic",
+    "spacing": {
+      "width": 1.081073049637744
+    },
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 14,
+      "brew": "font-jetbrains-mono-nerd-font"
+    }
+  },
+  "prompt": {
+    "starship": "format = \"$directory on 🔥 $git_branch via ⬢ $nodejs on 📱 $username$character \"\n\n[directory]\ntruncation_length = 3\ntruncate_to_repo = true\nstyle = \"bold cyan\"\n\n[git_branch]\nstyle = \"bold purple\"\nformat = \"$branch \"\n\n[nodejs]\nstyle = \"bold green\"\nformat = \"v$version \"\n\n[username]\nshow_always = true\nstyle_user = \"bold purple\"\nformat = \"$user\"\n\n[character]\nsuccess_symbol = \"❯\"\nerror_symbol = \"❯\"\n"
+  },
+  "shell": {
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "atuin",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ]
+}

@@ -1,7 +1,7 @@
 import { writeSync } from "node:fs";
 import { ctx } from "./context";
 import { BuddyError, fail } from "./errors";
-import { icon, theme } from "./theme";
+import { icon, shadeCode, theme } from "./theme";
 
 const ESC = "\x1b[";
 
@@ -23,11 +23,11 @@ function paint(code: string, s: string): string {
 
 export const c = {
   bold: (s: string) => paint("1", s),
-  dim: (s: string) => paint(`38;5;${theme().dim}`, s),
-  accent: (s: string) => paint(`38;5;${theme().accent}`, s),
-  ok: (s: string) => paint(`38;5;${theme().ok}`, s),
-  warn: (s: string) => paint(`38;5;${theme().warn}`, s),
-  err: (s: string) => paint(`38;5;${theme().err}`, s),
+  dim: (s: string) => paint(shadeCode(theme().dim), s),
+  accent: (s: string) => paint(shadeCode(theme().accent), s),
+  ok: (s: string) => paint(shadeCode(theme().ok), s),
+  warn: (s: string) => paint(shadeCode(theme().warn), s),
+  err: (s: string) => paint(shadeCode(theme().err), s),
   add: (s: string) => paint("32", s),
   del: (s: string) => paint("31", s),
 };

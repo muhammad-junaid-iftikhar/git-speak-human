@@ -188,13 +188,13 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [ ] Bump to 0.2.0, write CHANGELOG.md, tag `v0.2.0` and publish a GitHub Release with binaries via the release workflow, so the one-line installers work.
 
 **5. Terminal themes: a whole look in one pick**
-- [ ] A theme is one JSON file (`themes/<name>.json`): Terminal.app colors (background, text, cursor, selection, 16 ANSI colors), font and size, opacity/blur, Starship prompt, zsh extras (autosuggestion and syntax-highlighting colors, history settings), recommended tools, and the gitbuddy palette.
-- [ ] `gitbuddy theme`: list themes with a colour preview. `gitbuddy theme <name>` applies everything: creates the Terminal.app profile and makes it the default, updates open windows, installs the prompt and zsh extras through one managed line in `~/.zshrc`, and offers to install missing fonts/tools with brew.
-- [ ] Before the first apply, save your current setup as a theme (`my-original`), so `gitbuddy theme my-original` always takes you back.
-- [ ] `gitbuddy theme save <name>`: capture your current Terminal.app profile, Starship config and zsh extras into a theme file you can share.
-- [ ] `gitbuddy theme random` and `gitbuddy theme daily on`: a new look every day for people who get bored.
-- [ ] Built-in themes: `juni` (your current setup), dracula, nord, tokyo-night, catppuccin-mocha, gruvbox, solarized-dark, synthwave, rose-pine, pirate.
-- [ ] Community themes: anyone adds `themes/<name>.json` by PR (guide in CONTRIBUTING.md, validated in CI). `gitbuddy theme --online` lists the latest from GitHub.
+- [x] A theme is one JSON file (`themes/<name>.json`): Terminal.app colors (background, text, cursor, selection, 16 ANSI colors), font and size, opacity/blur, Starship prompt, zsh extras (autosuggestion and syntax-highlighting colors, history settings), recommended tools, and the gitbuddy palette.
+- [x] `gitbuddy theme`: list themes with a colour preview. `gitbuddy theme <name>` applies everything: creates the Terminal.app profile and makes it the default, updates open windows, installs the prompt and zsh extras through one managed line in `~/.zshrc`, and offers to install missing fonts/tools with brew.
+- [x] Before the first apply, save your current setup as a theme (`my-original`), so `gitbuddy theme my-original` always takes you back.
+- [x] `gitbuddy theme save <name>`: capture your current Terminal.app profile, Starship config and zsh extras into a theme file you can share.
+- [x] `gitbuddy theme random` and `gitbuddy theme daily on`: a new look every day for people who get bored.
+- [x] Built-in themes: `juni` (your current setup), dracula, nord, tokyo-night, catppuccin-mocha, gruvbox, solarized-dark, synthwave, rose-pine, pirate.
+- [x] Community themes: anyone adds `themes/<name>.json` by PR (guide in CONTRIBUTING.md, validated in CI). `gitbuddy theme --online` lists the latest from GitHub.
 - [ ] Later: iTerm2, Ghostty, Warp, Windows Terminal, GNOME Terminal backends.
 
 ---

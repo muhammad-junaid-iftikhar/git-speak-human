@@ -43,6 +43,29 @@ bun test                   # end-to-end tests in throwaway repos
 - Every error says what happened **and** what to do next (`hint`).
 - Fun is welcome, but never slow and never shown to agents.
 
+## Adding a terminal theme
+
+Anyone can add a theme. A theme is one JSON file in `themes/` and covers Terminal.app colors and font, the Starship prompt, zsh suggestion and syntax colors, history settings, recommended tools, and gitbuddy's own colors.
+
+1. Easiest: set up your terminal the way you like it, then run `gitbuddy theme save my-theme`. That writes `~/.config/gitbuddy/themes/my-theme.json`.
+2. Or copy `themes/dracula.json` and change the colors.
+3. Put the file in `themes/` (file name = `name`), run `bun scripts/themes-index.ts` to validate it and update `themes/index.json`, and open a pull request.
+
+Fields:
+
+| Field | What |
+|---|---|
+| `name`, `title`, `author`, `description` | lowercase-dash name, display name, you, one line |
+| `terminal.background/foreground/cursor/selection/bold` | `#rrggbb` |
+| `terminal.ansi` | 16 colors: black, red, green, yellow, blue, magenta, cyan, white, then the bright versions |
+| `terminal.font` | `{ "name": PostScript name, "size": 13, "fallback": "SFMono-Regular", "brew": "font-…-nerd-font" }` |
+| `terminal.opacity/blur/cursorShape/blink/spacing/columns/rows` | optional window details |
+| `terminal.baseProfile` | use a built-in Terminal profile (e.g. `"Basic"`) instead of colors |
+| `prompt.starship` | a full `starship.toml`, or `"auto"` to generate one from your colors; `null` keeps the user's prompt |
+| `shell` | `autosuggestColor`, `syntax` (zsh-syntax-highlighting styles), `history`, `aliases` (only set if the tool is installed), `extra` |
+| `tools` | e.g. `["starship", "eza", "zsh-autosuggestions"]`; gitbuddy offers to `brew install` missing ones |
+| `gitbuddy` | `accent/ok/warn/err/dim` as `#rrggbb`, plus an optional `mascot` emoji |
+
 ## Releasing
 
 Run `gitbuddy release X.Y.Z`. Pushing the tag triggers `.github/workflows/release.yml`, which builds the binaries.

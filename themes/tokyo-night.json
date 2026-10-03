@@ -1,0 +1,87 @@
+{
+  "name": "tokyo-night",
+  "title": "Tokyo Night",
+  "author": "gitbuddy",
+  "description": "Neon city lights after dark",
+  "terminal": {
+    "background": "#1a1b26",
+    "foreground": "#c0caf5",
+    "cursor": "#c0caf5",
+    "selection": "#33467c",
+    "bold": "#c0caf5",
+    "ansi": [
+      "#15161e",
+      "#f7768e",
+      "#9ece6a",
+      "#e0af68",
+      "#7aa2f7",
+      "#bb9af7",
+      "#7dcfff",
+      "#a9b1d6",
+      "#414868",
+      "#f7768e",
+      "#9ece6a",
+      "#e0af68",
+      "#7aa2f7",
+      "#bb9af7",
+      "#7dcfff",
+      "#c0caf5"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 0.96,
+    "blur": 0.3,
+    "cursorShape": "bar",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#414868",
+    "syntax": {
+      "command": "fg=#9ece6a",
+      "builtin": "fg=#9ece6a",
+      "alias": "fg=#7dcfff",
+      "unknown-token": "fg=#f7768e,bold",
+      "path": "fg=#7aa2f7,underline",
+      "single-quoted-argument": "fg=#e0af68",
+      "double-quoted-argument": "fg=#e0af68",
+      "comment": "fg=#414868"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#7aa2f7",
+    "ok": "#9ece6a",
+    "warn": "#e0af68",
+    "err": "#f7768e",
+    "dim": "#414868",
+    "mascot": "🌃"
+  }
+}

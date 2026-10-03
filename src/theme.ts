@@ -1,12 +1,15 @@
-import { config } from "./config";
+import { join } from "node:path";
+import { config, homeDir, readJSON } from "./config";
+
+export type Shade = number | string;
 
 export interface Theme {
   name: string;
-  accent: number;
-  ok: number;
-  warn: number;
-  err: number;
-  dim: number;
+  accent: Shade;
+  ok: Shade;
+  warn: Shade;
+  err: Shade;
+  dim: Shade;
   mascot: string;
   prompt: string;
 }
@@ -19,8 +22,22 @@ export const THEMES: Record<string, Theme> = {
   pirate: { name: "pirate", accent: 179, ok: 106, warn: 208, err: 160, dim: 137, mascot: "🏴‍☠️", prompt: "gitbuddy ☠" },
 };
 
+let custom: { name: string; palette: Theme | null } | null = null;
+
 export function theme(): Theme {
-  return THEMES[config().theme] ?? THEMES.classic;
+  const name = config().theme;
+  if (THEMES[name]) return THEMES[name];
+  if (custom?.name !== name) {
+    const palette = readJSON<Theme | null>(join(homeDir(), "palette.json"), null);
+    custom = { name, palette: palette?.name === name ? palette : null };
+  }
+  return custom.palette ?? THEMES.classic;
+}
+
+export function shadeCode(shade: Shade): string {
+  if (typeof shade === "number") return `38;5;${shade}`;
+  const n = parseInt(shade.replace("#", ""), 16);
+  return `38;2;${(n >> 16) & 255};${(n >> 8) & 255};${n & 255}`;
 }
 
 const ICONS: Record<string, string> = {

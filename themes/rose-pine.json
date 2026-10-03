@@ -1,0 +1,87 @@
+{
+  "name": "rose-pine",
+  "title": "Rosé Pine",
+  "author": "gitbuddy",
+  "description": "All natural pine, faux fur and a bit of soho vibes",
+  "terminal": {
+    "background": "#191724",
+    "foreground": "#e0def4",
+    "cursor": "#524f67",
+    "selection": "#403d52",
+    "bold": "#e0def4",
+    "ansi": [
+      "#26233a",
+      "#eb6f92",
+      "#31748f",
+      "#f6c177",
+      "#9ccfd8",
+      "#c4a7e7",
+      "#ebbcba",
+      "#e0def4",
+      "#6e6a86",
+      "#eb6f92",
+      "#31748f",
+      "#f6c177",
+      "#9ccfd8",
+      "#c4a7e7",
+      "#ebbcba",
+      "#e0def4"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 0.97,
+    "blur": 0.2,
+    "cursorShape": "bar",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#6e6a86",
+    "syntax": {
+      "command": "fg=#31748f",
+      "builtin": "fg=#31748f",
+      "alias": "fg=#ebbcba",
+      "unknown-token": "fg=#eb6f92,bold",
+      "path": "fg=#9ccfd8,underline",
+      "single-quoted-argument": "fg=#f6c177",
+      "double-quoted-argument": "fg=#f6c177",
+      "comment": "fg=#6e6a86"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#9ccfd8",
+    "ok": "#31748f",
+    "warn": "#f6c177",
+    "err": "#eb6f92",
+    "dim": "#6e6a86",
+    "mascot": "🌹"
+  }
+}

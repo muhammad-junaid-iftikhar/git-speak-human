@@ -1,0 +1,87 @@
+{
+  "name": "pirate",
+  "title": "Pirate",
+  "author": "gitbuddy",
+  "description": "Old parchment and gold doubloons. Arr!",
+  "terminal": {
+    "background": "#1b1410",
+    "foreground": "#e8d5b5",
+    "cursor": "#d4a017",
+    "selection": "#3b2a1e",
+    "bold": "#fff8e7",
+    "ansi": [
+      "#2b1e16",
+      "#c0392b",
+      "#6b8e23",
+      "#d4a017",
+      "#4682b4",
+      "#8e44ad",
+      "#2e8b8b",
+      "#e8d5b5",
+      "#5c4033",
+      "#e74c3c",
+      "#9acd32",
+      "#f1c40f",
+      "#5dade2",
+      "#af7ac5",
+      "#48c9b0",
+      "#fff8e7"
+    ],
+    "font": {
+      "name": "JetBrainsMonoNF-Regular",
+      "size": 13,
+      "fallback": "SFMono-Regular",
+      "brew": "font-jetbrains-mono-nerd-font"
+    },
+    "opacity": 1.0,
+    "blur": 0,
+    "cursorShape": "block",
+    "blink": false,
+    "spacing": {
+      "width": 1,
+      "height": 1.05
+    },
+    "columns": 120,
+    "rows": 34
+  },
+  "prompt": {
+    "starship": "auto"
+  },
+  "shell": {
+    "autosuggestColor": "#5c4033",
+    "syntax": {
+      "command": "fg=#9acd32",
+      "builtin": "fg=#9acd32",
+      "alias": "fg=#48c9b0",
+      "unknown-token": "fg=#e74c3c,bold",
+      "path": "fg=#5dade2,underline",
+      "single-quoted-argument": "fg=#f1c40f",
+      "double-quoted-argument": "fg=#f1c40f",
+      "comment": "fg=#5c4033"
+    },
+    "history": {
+      "size": 100000,
+      "share": true,
+      "ignoreDups": true
+    },
+    "aliases": {
+      "ls": "eza --icons --group-directories-first",
+      "ll": "eza -la --icons --group-directories-first",
+      "lt": "eza --tree --icons --level=2"
+    }
+  },
+  "tools": [
+    "starship",
+    "zsh-autosuggestions",
+    "zsh-syntax-highlighting",
+    "eza"
+  ],
+  "gitbuddy": {
+    "accent": "#5dade2",
+    "ok": "#9acd32",
+    "warn": "#f1c40f",
+    "err": "#e74c3c",
+    "dim": "#5c4033",
+    "mascot": "🏴‍☠️"
+  }
+}

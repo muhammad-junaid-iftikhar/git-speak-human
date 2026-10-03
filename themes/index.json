@@ -1,0 +1,64 @@
+{
+  "themes": [
+    {
+      "name": "catppuccin-mocha",
+      "title": "Catppuccin Mocha",
+      "author": "gitbuddy",
+      "description": "Soothing pastel on a dark mocha"
+    },
+    {
+      "name": "dracula",
+      "title": "Dracula",
+      "author": "gitbuddy",
+      "description": "The famous dark purple theme"
+    },
+    {
+      "name": "gruvbox",
+      "title": "Gruvbox Dark",
+      "author": "gitbuddy",
+      "description": "Warm retro groove"
+    },
+    {
+      "name": "juni",
+      "title": "Juni",
+      "author": "Muhammad Junaid Iftikhar",
+      "description": "Basic Terminal.app, starship 🔥⬢📱 prompt, atuin history, autosuggestions, eza icons"
+    },
+    {
+      "name": "nord",
+      "title": "Nord",
+      "author": "gitbuddy",
+      "description": "Calm arctic blues"
+    },
+    {
+      "name": "pirate",
+      "title": "Pirate",
+      "author": "gitbuddy",
+      "description": "Old parchment and gold doubloons. Arr!"
+    },
+    {
+      "name": "rose-pine",
+      "title": "Rosé Pine",
+      "author": "gitbuddy",
+      "description": "All natural pine, faux fur and a bit of soho vibes"
+    },
+    {
+      "name": "solarized-dark",
+      "title": "Solarized Dark",
+      "author": "gitbuddy",
+      "description": "The classic, easy on the eyes"
+    },
+    {
+      "name": "synthwave",
+      "title": "Synthwave '84",
+      "author": "gitbuddy",
+      "description": "Retro neon, straight out of 1984"
+    },
+    {
+      "name": "tokyo-night",
+      "title": "Tokyo Night",
+      "author": "gitbuddy",
+      "description": "Neon city lights after dark"
+    }
+  ]
+}
