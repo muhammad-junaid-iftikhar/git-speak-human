@@ -184,8 +184,8 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [x] Explain before doing it: which saves and files will be reverted.
 
 **4. Proper versions**
-- [ ] `gitbuddy --version` / `-v` work, and `gitbuddy version` shows git, Bun, install method and whether an update is available.
-- [ ] Bump to 0.2.0, write CHANGELOG.md, tag `v0.2.0` and publish a GitHub Release with binaries via the release workflow, so the one-line installers work.
+- [x] `gitbuddy --version` / `-v` work, and `gitbuddy version` shows git, Bun, install method and whether an update is available.
+- [x] Bump to 0.2.0, write CHANGELOG.md, tag `v0.2.0` and publish a GitHub Release with binaries via the release workflow, so the one-line installers work.
 
 **5. Terminal themes: a whole look in one pick**
 - [x] A theme is one JSON file (`themes/<name>.json`): Terminal.app colors (background, text, cursor, selection, 16 ANSI colors), font and size, opacity/blur, Starship prompt, zsh extras (autosuggestion and syntax-highlighting colors, history settings), recommended tools, and the gitbuddy palette.
