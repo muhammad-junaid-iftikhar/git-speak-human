@@ -98,7 +98,7 @@ const commands: Command[] = [
     run: (args) => {
       const workName = args.join(" ");
       if (!workName) {
-        console.log("❌ Give your work a name: buddy work \"feature name\"");
+        console.log("❌ Give your work a name: gitbuddywork \"feature name\"");
         return;
       }
 
@@ -123,7 +123,7 @@ const commands: Command[] = [
       run("git add .");
       const timestamp = new Date().toLocaleString();
       run(`git stash push -m "CHECKPOINT [${timestamp}]"`);
-      console.log("✅ Progress saved! Pull latest with 'buddy get' if needed.");
+      console.log("✅ Progress saved! Pull latest with 'gitbuddyget' if needed.");
     },
   },
   {
@@ -133,14 +133,14 @@ const commands: Command[] = [
     run: () => {
       const stashes = run("git stash list");
       if (!stashes) {
-        console.log("📭 No work saved yet! Start with: buddy work \"something\"");
+        console.log("📭 No work saved yet! Start with: gitbuddywork \"something\"");
         return;
       }
       console.log("\n📋 Your work items:");
       const lines = stashes.split("\n").filter((l) => l.includes("WORK:"));
       if (lines.length === 0) {
         console.log("   No named work items yet");
-        console.log("\n   Use: buddy work \"feature name\"");
+        console.log("\n   Use: gitbuddywork \"feature name\"");
         return;
       }
       lines.forEach((line) => {
@@ -177,7 +177,7 @@ const commands: Command[] = [
 
       if (!matching) {
         console.log(`❌ No work found with: "${workNamePattern}"`);
-        console.log("Use 'buddy my-work' to see available work");
+        console.log("Use 'gitbuddymy-work' to see available work");
         return;
       }
 
@@ -192,10 +192,10 @@ const commands: Command[] = [
     description: "Show this help message",
     run: () => {
       console.log(`
-🎤 buddy
+🎤 gitbuddy
 Git for humans. Just talk to your buddy.
 
-Usage: buddy <command> [args]
+Usage: gitbuddy <command> [args]
 
 Commands:
 `);
@@ -207,17 +207,17 @@ Commands:
       });
       console.log(`
 Examples:
-  buddy work "dark-mode feature"
-  buddy save
-  buddy work "fix-button"
-  buddy my-work
-  buddy switch "dark-mode"
-  buddy done "ready to merge"
-  buddy send
-  buddy get
-  buddy show
-  buddy oops
-  buddy what-happened
+  gitbuddywork "dark-mode feature"
+  gitbuddysave
+  gitbuddywork "fix-button"
+  gitbuddymy-work
+  gitbuddyswitch "dark-mode"
+  gitbuddydone "ready to merge"
+  gitbuddysend
+  gitbuddyget
+  gitbuddyshow
+  gitbuddyoops
+  gitbuddywhat-happened
 `);
     },
   },
@@ -241,7 +241,7 @@ function main() {
 
   if (!command) {
     console.log(`❌ Unknown command: ${commandName}`);
-    console.log(`Run 'speak help' to see available commands.`);
+    console.log(`Run 'gitbuddy help' to see available commands.`);
     process.exit(1);
   }
 

@@ -1,24 +1,24 @@
-# 🎤 buddy
+# 🎤 gitbuddy
 
 Git for humans. Work on multiple things at once. No branches. Just work.
 
 ## Install
 
 ```bash
-bun install -g git-speak-human
+bun install -g github:muhammad-junaid-iftikhar/git-speak-human
 ```
 
 ## Use It
 
 ```bash
-buddy work "dark-mode"              # Start work 1
-buddy save                          # Save progress
-buddy work "fix-button"             # Switch to work 2 (auto-saves work 1)
-buddy my-work                       # See all your work with dates
-buddy switch "dark-mode"            # Go back to work 1
-buddy done "ready to go"            # Commit to main
-buddy send                          # Push to team
-buddy get                           # Get latest changes
+gitbuddy work "dark-mode"              # Start work 1
+gitbuddy save                          # Save progress
+gitbuddy work "fix-button"             # Switch to work 2 (auto-saves work 1)
+gitbuddy my-work                       # See all your work with dates
+gitbuddy switch "dark-mode"            # Go back to work 1
+gitbuddy done "ready to go"            # Commit to main
+gitbuddy send                          # Push to team
+gitbuddy get                           # Get latest changes
 ```
 
 ## Commands
@@ -42,38 +42,38 @@ buddy get                           # Get latest changes
 
 ```bash
 # Start work 1
-buddy work "dark-mode feature"
+gitbuddy work "dark-mode feature"
 # Make changes...
-buddy save          # Save progress
+gitbuddy save          # Save progress
 
 # Switch to work 2 (automatically saves work 1)
-buddy work "fix-login-button"
+gitbuddy work "fix-login-button"
 # Make changes...
-buddy save
+gitbuddy save
 
 # See all your work with timestamps
-buddy my-work
+gitbuddy my-work
 # Output:
 #   stash@{0}: WORK: fix-login-button [Oct 3 2:45pm]
 #   stash@{1}: WORK: dark-mode feature [Oct 3 2:30pm]
 
 # Go back to work 1
-buddy switch "dark-mode"
+gitbuddy switch "dark-mode"
 # Continue where you left off...
-buddy save
+gitbuddy save
 
 # Ready to commit? Send to team
-buddy done "dark-mode feature complete"
-buddy send
+gitbuddy done "dark-mode feature complete"
+gitbuddy send
 
 # Get latest changes from team
-buddy get
+gitbuddy get
 
 # See what changed
-buddy show
+gitbuddy show
 
 # Made a mistake? Undo it
-buddy oops
+gitbuddy oops
 ```
 
 **The magic:** Everything stays on `main`. No branches. No confusion. Just work on multiple things, save progress, switch between them.

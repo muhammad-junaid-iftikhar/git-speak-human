@@ -4,7 +4,7 @@
   "description": "Git for people who don't know git. Just speak what you want to do.",
   "type": "module",
   "bin": {
-    "buddy": "./src/cli.ts"
+    "gitbuddy": "./src/cli.ts"
   },
   "scripts": {
     "dev": "bun src/cli.ts",
