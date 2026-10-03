@@ -113,16 +113,16 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 
 ## Phase 5 — Fun, personality and profile (P2)
 
-- [ ] **Interactive mode:** running `gitbuddy` alone opens a friendly prompt (`🐙 gitbuddy ›`) with a menu of what you can do *right now*, based on repo state. Arrow-key picker plus type-to-search.
-- [ ] Random greetings, tips and ASCII mascots on start. Changes daily. Never more than 2 lines. Off with `--no-fun` or when not a TTY.
-- [ ] **Profile** in `~/.config/gitbuddy/profile.json`: name, avatar emoji, favourite theme. First run asks 2 questions, max 15 seconds.
-- [ ] **Stats and streaks:** saves today, day streak, lines added this week, "most productive hour". `gitbuddy me` shows a profile card.
-- [ ] **Achievements:** first save, first send, 7-day streak, "survived a conflict", "used undo like a pro", 100 saves… shown as small toasts.
-- [ ] Themes: `classic`, `neon`, `pastel`, `mono`, `pirate` 🏴‍☠️. Respect `NO_COLOR`.
-- [ ] Spinners and progress bars for network operations. Celebrate a send with a short confetti line.
-- [ ] Friendly error personality: "Uh-oh, your teammate changed the same line 🤝. Let's sort it out together →", followed by the exact next step.
-- [ ] Shell completions for zsh, bash, fish and PowerShell, including workspace names.
-- [ ] Optional prompt segment (starship/p10k) showing the active workspace and unsaved count.
+- [x] **Interactive mode:** running `gitbuddy` alone opens a friendly prompt (`🐙 gitbuddy ›`) with a menu of what you can do *right now*, based on repo state. Numbered picker plus type-any-command (arrow keys: later).
+- [x] Random greetings, tips and ASCII mascots on start. Changes daily. Never more than 2 lines. Off with `--no-fun` or when not a TTY.
+- [x] **Profile** in `~/.config/gitbuddy/profile.json`: name, avatar emoji, favourite theme. First run asks 2 questions, max 15 seconds.
+- [x] **Stats and streaks:** saves today, day streak, lines added this week, "most productive hour". `gitbuddy me` shows a profile card.
+- [x] **Achievements:** first save, first send, 7-day streak, "survived a conflict", "used undo like a pro", 100 saves… shown as small toasts.
+- [x] Themes: `classic`, `neon`, `pastel`, `mono`, `pirate` 🏴‍☠️. Respect `NO_COLOR`.
+- [x] Spinners and progress bars for network operations. Celebrate a send with a short confetti line.
+- [x] Friendly error personality: "Uh-oh, your teammate changed the same line 🤝. Let's sort it out together →", followed by the exact next step.
+- [x] Shell completions for zsh, bash, fish and PowerShell, including workspace names.
+- [x] Optional prompt segment (starship/p10k) showing the active workspace and unsaved count.
 
 ## Phase 6 — Built for AI agents and LLMs (P1)
 
@@ -141,13 +141,13 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [ ] Single-file binaries with `bun build --compile` for macOS (arm64/x64), Linux (x64/arm64) and Windows, attached to GitHub Releases.
 - [ ] One-line installer: `curl -fsSL https://…/install.sh | sh` (and a PowerShell version).
 - [ ] Homebrew tap, Scoop bucket, AUR (P2).
-- [ ] `gitbuddy update`: self-update, with a gentle "new version available" notice at most once a day.
+- [x] `gitbuddy update`: self-update, with a gentle "new version available" notice at most once a day.
 - [ ] Release automation: tag → CI builds binaries → GitHub Release → npm publish.
 
 ## Phase 8 — Docs, community, world (P2)
 
 - [ ] README rewrite: 10-second GIF, install line, 5 commands, "for git pros" section mapping git → gitbuddy.
-- [ ] `gitbuddy learn`: optional 5-minute interactive tutorial in a sandbox repo.
+- [x] `gitbuddy learn`: optional 5-minute interactive tutorial in a sandbox repo.
 - [ ] Cheatsheet page (git ↔ gitbuddy), docs site.
 - [ ] Translations of all messages (start with en, es, de, ur, hi, ar, pt, zh). Strings go in `src/i18n/`.
 - [ ] LICENSE file (MIT), CONTRIBUTING.md, issue templates, CODE_OF_CONDUCT.

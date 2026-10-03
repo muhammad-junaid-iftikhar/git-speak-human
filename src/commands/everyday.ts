@@ -308,7 +308,7 @@ define({
 
 define({
   name: "get",
-  aliases: ["pull", "update", "download"],
+  aliases: ["pull", "download", "fetch"],
   group: "everyday",
   summary: "Get the latest work from your team",
   gitEquivalent: "git pull --rebase --autostash",
