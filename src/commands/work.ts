@@ -172,7 +172,7 @@ define({
 
 define({
   name: "save",
-  aliases: ["checkpoint", "keep"],
+  aliases: ["checkpoint", "progress"],
   group: "work",
   summary: "Save your progress without making it permanent (files stay as they are)",
   mutates: true,

@@ -4,7 +4,35 @@ import { readJSON, writeJSON } from "./config";
 import { ctx } from "./context";
 import { git, internalEnv, out, tryOut } from "./git";
 import { currentBranch, head } from "./repo";
-import { readState, stateDir, updateState } from "./state";
+import { readState, readWorkspaces, stateDir, updateState, writeWorkspaces, type WorkspaceMeta } from "./state";
+
+export interface WorkState {
+  refs: Record<string, string>;
+  meta: Record<string, WorkspaceMeta>;
+}
+
+export function captureWork(): WorkState {
+  const raw = tryOut(["for-each-ref", "--format=%(refname) %(objectname)", "refs/gitbuddy/work/"]) ?? "";
+  const refs: Record<string, string> = {};
+  for (const line of raw.split("\n").filter(Boolean)) {
+    const [ref, sha] = line.split(" ");
+    refs[ref.slice("refs/gitbuddy/work/".length)] = sha;
+  }
+  return { refs, meta: readWorkspaces() };
+}
+
+function restoreWork(w: WorkState): void {
+  const current = captureWork().refs;
+  for (const [slug, sha] of Object.entries(current)) {
+    if (w.refs[slug]) continue;
+    git(["update-ref", "--create-reflog", `refs/gitbuddy/trash/${slug}-${Date.now().toString(36)}`, sha], { mutates: true });
+    git(["update-ref", "-d", `refs/gitbuddy/work/${slug}`], { mutates: true });
+  }
+  for (const [slug, sha] of Object.entries(w.refs)) {
+    if (current[slug] !== sha) git(["update-ref", "--create-reflog", `refs/gitbuddy/work/${slug}`, sha], { mutates: true });
+  }
+  if (!ctx.flags.dryRun) writeWorkspaces(w.meta);
+}
 
 export interface Captured {
   head: string | null;
@@ -59,8 +87,9 @@ export interface JournalEntry {
   head: string | null;
   commit: string;
   active?: string;
+  work?: WorkState;
   undone?: boolean;
-  redo?: string;
+  redo?: { commit: string; branch: string | null; head: string | null; active?: string; work?: WorkState; batch: string[] };
 }
 
 const journalFile = () => join(stateDir(), "journal.json");
@@ -81,7 +110,11 @@ export function record(action: string, label = action): string | undefined {
   const id = newId();
   git(["update-ref", "--create-reflog", `refs/gitbuddy/snapshots/${id}`, commit]);
   let journal = readJournal();
-  journal = journal.filter((e) => !e.undone);
+  for (const e of journal) {
+    if (e.redo) git(["update-ref", "-d", `refs/gitbuddy/redo/${e.id}`], { allowFail: true });
+    if (e.undone) git(["update-ref", "-d", `refs/gitbuddy/snapshots/${e.id}`], { allowFail: true });
+  }
+  journal = journal.filter((e) => !e.undone).map(({ redo, ...e }) => e);
   journal.push({
     id,
     time: new Date().toISOString(),
@@ -91,6 +124,7 @@ export function record(action: string, label = action): string | undefined {
     head: cap.head,
     commit,
     active: readState().active,
+    work: captureWork(),
   });
   writeJournal(prune(journal));
   ctx.snapshotId = id;
@@ -108,24 +142,24 @@ function prune(journal: JournalEntry[]): JournalEntry[] {
   return keep;
 }
 
-export function markUndone(id: string, redoCommit: string): void {
+export function markUndone(chosen: string, batch: string[], redo: Omit<NonNullable<JournalEntry["redo"]>, "batch">): void {
   const j = readJournal();
-  const e = j.find((x) => x.id === id);
+  for (const e of j) if (batch.includes(e.id)) e.undone = true;
+  const e = j.find((x) => x.id === chosen);
   if (e) {
-    e.undone = true;
-    e.redo = redoCommit;
-    git(["update-ref", `refs/gitbuddy/redo/${id}`, redoCommit]);
+    e.redo = { ...redo, batch };
+    git(["update-ref", `refs/gitbuddy/redo/${chosen}`, redo.commit]);
   }
   writeJournal(j);
 }
 
-export function markRedone(id: string): void {
+export function markRedone(chosen: string): void {
   const j = readJournal();
-  const e = j.find((x) => x.id === id);
-  if (e) {
-    e.undone = false;
+  const e = j.find((x) => x.id === chosen);
+  if (e?.redo) {
+    for (const x of j) if (e.redo.batch.includes(x.id)) x.undone = false;
     delete e.redo;
-    git(["update-ref", "-d", `refs/gitbuddy/redo/${id}`], { allowFail: true });
+    git(["update-ref", "-d", `refs/gitbuddy/redo/${chosen}`], { allowFail: true });
   }
   writeJournal(j);
 }
@@ -142,7 +176,7 @@ function fillTree(workTree: string, indexTree: string): void {
   git(["update-index", "-q", "--refresh"], { allowFail: true, mutates: true, quietExplain: true });
 }
 
-export function restoreExact(target: { branch: string | null; head: string | null; commit: string; active?: string }): void {
+export function restoreExact(target: { branch: string | null; head: string | null; commit: string; active?: string; work?: WorkState }): void {
   const p = parts(target.commit);
   if (target.branch && tryOut(["rev-parse", "-q", "--verify", `refs/heads/${target.branch}`])) {
     if (currentBranch() !== target.branch) git(["switch", "-q", "-f", target.branch], { mutates: true });
@@ -157,6 +191,7 @@ export function restoreExact(target: { branch: string | null; head: string | nul
   }
   git(["clean", "-fdq"], { mutates: true });
   fillTree(p.workTree, p.indexTree);
+  if (target.work) restoreWork(target.work);
   if (!ctx.flags.dryRun) updateState((s) => (s.active = target.active));
 }
 
