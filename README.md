@@ -1,6 +1,6 @@
 # 🎤 buddy
 
-Git for humans. Just talk to your buddy.
+Git for humans. Work on multiple things at once. No branches. Just work.
 
 ## Install
 
@@ -11,76 +11,72 @@ bun install -g git-speak-human
 ## Use It
 
 ```bash
-buddy done "I added a button"      # Save your work
-buddy send                          # Send to team
-buddy get                           # Get latest
-buddy show                          # See what changed
-buddy start my-feature              # Start new work
-buddy switch main                   # Switch branches
-buddy oops                          # Undo last action
-buddy what-happened                 # See recent changes
+buddy work "dark-mode"              # Start work 1
+buddy save                          # Save progress
+buddy work "fix-button"             # Switch to work 2 (auto-saves work 1)
+buddy my-work                       # See all your work with dates
+buddy switch "dark-mode"            # Go back to work 1
+buddy done "ready to go"            # Commit to main
+buddy send                          # Push to team
+buddy get                           # Get latest changes
 ```
 
 ## Commands
 
 | Command | Aliases | What it does |
 |---------|---------|--------------|
-| `done` | `save`, `s`, `commit` | Save your work with a message |
+| `work` | `start-work`, `create` | Start a new piece of work (auto-saves current) |
+| `save` | `checkpoint`, `progress` | Save your progress (without committing) |
+| `my-work` | `work-list`, `list-work`, `tasks` | See all your work items with timestamps |
+| `switch` | `switch-to`, `go` | Switch to another piece of work |
+| `done` | `commit` | Commit your work to main |
 | `send` | `push`, `p` | Send your work to the team |
 | `get` | `pull`, `update` | Get the latest work from the team |
 | `show` | `status`, `st`, `check` | Show what you changed |
-| `start` | `begin`, `new`, `branch` | Start a new piece of work |
-| `switch` | `go`, `move`, `checkout` | Switch to another piece of work |
 | `oops` | `undo`, `revert` | Undo your last action |
 | `what-happened` | `history`, `log`, `timeline` | See what everyone did recently |
-| `stash` | `save-for-later`, `pause` | Save work temporarily without committing |
-| `my-stashes` | `stashes`, `saved`, `list-stash` | See all your saved work |
-| `get-back` | `restore-stash`, `pop` | Get back your most recent saved work |
 
-## Examples
+## Workflow Example
 
-**Save and send your work:**
+**Work on multiple things at once (all on main):**
+
 ```bash
-buddy done "Fixed the login bug"
+# Start work 1
+buddy work "dark-mode feature"
+# Make changes...
+buddy save          # Save progress
+
+# Switch to work 2 (automatically saves work 1)
+buddy work "fix-login-button"
+# Make changes...
+buddy save
+
+# See all your work with timestamps
+buddy my-work
+# Output:
+#   stash@{0}: WORK: fix-login-button [Oct 3 2:45pm]
+#   stash@{1}: WORK: dark-mode feature [Oct 3 2:30pm]
+
+# Go back to work 1
+buddy switch "dark-mode"
+# Continue where you left off...
+buddy save
+
+# Ready to commit? Send to team
+buddy done "dark-mode feature complete"
 buddy send
-```
 
-**Get latest changes:**
-```bash
+# Get latest changes from team
 buddy get
-```
 
-**Start a new feature:**
-```bash
-buddy start dark-mode
-# Now you're on the dark-mode branch
-buddy done "Added dark theme"
-buddy send
-```
-
-**See what you changed:**
-```bash
+# See what changed
 buddy show
-```
 
-**Undo a mistake:**
-```bash
+# Made a mistake? Undo it
 buddy oops
 ```
 
-**Save work for later (without committing):**
-```bash
-buddy stash "still working on this feature"
-# Switch to another branch, do other work
-buddy get
-buddy switch my-feature
-buddy get-back              # Get your saved work back
-```
-
-**See all your saved work:**
-```bash
-buddy my-stashes
-```
+**The magic:** Everything stays on `main`. No branches. No confusion. Just work on multiple things, save progress, switch between them.
 
 ---
 

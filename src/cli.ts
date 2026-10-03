@@ -71,33 +71,6 @@ const commands: Command[] = [
     },
   },
   {
-    name: "start",
-    aliases: ["begin", "new", "branch"],
-    description: "Start a new piece of work",
-    run: (args) => {
-      const name = args.join("-") || "feature";
-      console.log(`🌱 Starting: ${name}`);
-      run(`git checkout -b ${name}`);
-      console.log(`✅ You're now working on: ${name}`);
-    },
-  },
-  {
-    name: "switch",
-    aliases: ["go", "move", "checkout"],
-    description: "Switch to another piece of work",
-    run: (args) => {
-      const branch = args.join("-");
-      if (!branch) {
-        console.log("📋 Your work branches:");
-        console.log(run("git branch -a"));
-        return;
-      }
-      console.log(`🔄 Switching to ${branch}...`);
-      run(`git checkout ${branch}`);
-      console.log(`✅ You're now on: ${branch}`);
-    },
-  },
-  {
     name: "oops",
     aliases: ["undo", "revert"],
     description: "Undo your last action",
@@ -119,44 +92,98 @@ const commands: Command[] = [
     },
   },
   {
-    name: "stash",
-    aliases: ["save-for-later", "pause"],
-    description: "Save work temporarily without committing",
+    name: "work",
+    aliases: ["start-work", "create"],
+    description: "Start a new piece of work (saves current work automatically)",
     run: (args) => {
-      const message = args.join(" ") || "Work in progress";
-      console.log(`💾 Saving for later: "${message}"`);
-      run("git add .");
-      run(`git stash push -m "${message}"`);
-      console.log("✅ Work saved! Use 'buddy get-back' to restore it.");
+      const workName = args.join(" ");
+      if (!workName) {
+        console.log("❌ Give your work a name: buddy work \"feature name\"");
+        return;
+      }
+
+      const currentStatus = run("git status --short");
+      if (currentStatus) {
+        const timestamp = new Date().toLocaleString();
+        console.log(`💾 Saving current work with timestamp...`);
+        run("git add .");
+        run(`git stash push -m "WORK: ${workName} [${timestamp}]"`);
+      }
+
+      console.log(`✨ Starting new work: "${workName}"`);
+      console.log(`You're on main, ready to work on: ${workName}`);
     },
   },
   {
-    name: "my-stashes",
-    aliases: ["stashes", "saved", "list-stash"],
-    description: "See all your saved work",
+    name: "save",
+    aliases: ["checkpoint", "progress"],
+    description: "Save your progress (without committing to main)",
+    run: () => {
+      console.log(`💾 Saving progress...`);
+      run("git add .");
+      const timestamp = new Date().toLocaleString();
+      run(`git stash push -m "CHECKPOINT [${timestamp}]"`);
+      console.log("✅ Progress saved! Pull latest with 'buddy get' if needed.");
+    },
+  },
+  {
+    name: "my-work",
+    aliases: ["work-list", "list-work", "tasks"],
+    description: "See all your work items with timestamps",
     run: () => {
       const stashes = run("git stash list");
       if (!stashes) {
-        console.log("📭 No saved work yet!");
+        console.log("📭 No work saved yet! Start with: buddy work \"something\"");
         return;
       }
-      console.log("\n💾 Your saved work:");
-      console.log(stashes);
+      console.log("\n📋 Your work items:");
+      const lines = stashes.split("\n").filter((l) => l.includes("WORK:"));
+      if (lines.length === 0) {
+        console.log("   No named work items yet");
+        console.log("\n   Use: buddy work \"feature name\"");
+        return;
+      }
+      lines.forEach((line) => {
+        console.log(`   ${line}`);
+      });
       console.log();
     },
   },
   {
-    name: "get-back",
-    aliases: ["restore-stash", "pop"],
-    description: "Get back your most recent saved work",
-    run: () => {
-      console.log("📤 Getting back your work...");
-      try {
-        run("git stash pop");
-        console.log("✅ Work restored!");
-      } catch (error) {
-        console.log("❌ No saved work to restore!");
+    name: "switch",
+    aliases: ["switch-to", "go", "switch-work"],
+    description: "Switch to another piece of work (saves current automatically)",
+    run: (args) => {
+      const workNamePattern = args.join(" ");
+      if (!workNamePattern) {
+        console.log("📋 Your work items:");
+        run("git stash list");
+        return;
       }
+
+      const currentStatus = run("git status --short");
+      if (currentStatus) {
+        const timestamp = new Date().toLocaleString();
+        console.log(`💾 Saving current work...`);
+        run("git add .");
+        run(`git stash push -m "WORK: auto-save [${timestamp}]"`);
+      }
+
+      console.log(`🔄 Switching to: ${workNamePattern}...`);
+      const stashes = run("git stash list");
+      const matching = stashes
+        .split("\n")
+        .find((s) => s.includes(workNamePattern));
+
+      if (!matching) {
+        console.log(`❌ No work found with: "${workNamePattern}"`);
+        console.log("Use 'buddy my-work' to see available work");
+        return;
+      }
+
+      const stashIndex = stashes.split("\n").indexOf(matching);
+      run(`git stash pop stash@{${stashIndex}}`);
+      console.log(`✅ You're now on: ${workNamePattern}`);
     },
   },
   {
@@ -180,17 +207,17 @@ Commands:
       });
       console.log(`
 Examples:
-  buddy done "I added a button"
+  buddy work "dark-mode feature"
+  buddy save
+  buddy work "fix-button"
+  buddy my-work
+  buddy switch "dark-mode"
+  buddy done "ready to merge"
   buddy send
   buddy get
   buddy show
-  buddy start dark-mode
-  buddy switch main
   buddy oops
   buddy what-happened
-  buddy stash "working on dark mode"
-  buddy my-stashes
-  buddy get-back
 `);
     },
   },
