@@ -9,7 +9,7 @@ import { git, tryOut } from "../git";
 import { execute } from "../main";
 import { define } from "../registry";
 import { THEMES, theme } from "../theme";
-import { c, plural, ui } from "../ui";
+import { c, plural, ui, writeOut } from "../ui";
 import { VERSION } from "../version";
 
 export function setupProfile(): void {
@@ -159,7 +159,7 @@ define({
     const script = COMPLETIONS[args[0]];
     if (!script) fail(`Shells I know: ${Object.keys(COMPLETIONS).join(", ")}`);
     ctx.data = { shell: args[0], script };
-    if (!ctx.flags.json) process.stdout.write(script + "\n");
+    if (!ctx.flags.json) writeOut(script + "\n");
   },
 });
 
@@ -183,7 +183,7 @@ define({
     const branch = tryOut(["symbolic-ref", "--short", "-q", "HEAD"]) ?? "⏳";
     const text = `${theme().mascot} ${active || branch}${dirty ? ` ●${dirty}` : ""}`;
     ctx.data = { workspace: active || null, branch, unsaved: dirty };
-    if (!ctx.flags.json) process.stdout.write(text);
+    if (!ctx.flags.json) writeOut(text);
   },
 });
 

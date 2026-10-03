@@ -1,4 +1,4 @@
-import { afterCommand, fmtTip, headerLine, randomTip, readProfile } from "./fun";
+import { afterCommand, fmtTip, headerLine, randomTip, readProfile, setInMenu } from "./fun";
 import { tryOut } from "./git";
 import { execute, hooks } from "./main";
 import { operation, repoRoot, status } from "./repo";
@@ -74,6 +74,7 @@ function choices(): { summary: string; items: Choice[] } {
 }
 
 async function menu(): Promise<void> {
+  setInMenu(true);
   if (!readProfile()) setupProfile();
   ui.line(headerLine());
   ui.line(c.dim(`   💡 ${fmtTip(randomTip())}`));

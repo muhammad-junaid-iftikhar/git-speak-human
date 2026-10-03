@@ -223,8 +223,11 @@ function newer(a: string, b: string): boolean {
 
 export const UPDATE_URL = "https://raw.githubusercontent.com/muhammad-junaid-iftikhar/git-speak-human/main/package.json";
 
+let inMenu = false;
+export const setInMenu = (v: boolean) => (inMenu = v);
+
 function updateNotice(): void {
-  if (!config().update_check || process.env.GITBUDDY_NO_UPDATE_CHECK) return;
+  if (inMenu || !config().update_check || process.env.GITBUDDY_NO_UPDATE_CHECK) return;
   const file = join(homeDir(), "update.json");
   const info = readJSON<UpdateInfo>(file, { checked: "1970-01-01" });
   if (info.latest && newer(info.latest, VERSION)) {

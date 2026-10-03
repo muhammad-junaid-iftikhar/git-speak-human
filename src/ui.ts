@@ -1,8 +1,21 @@
+import { writeSync } from "node:fs";
 import { ctx } from "./context";
 import { BuddyError, fail } from "./errors";
 import { icon, theme } from "./theme";
 
 const ESC = "\x1b[";
+
+function writeFd(fd: 1 | 2, text: string): void {
+  let buf = Buffer.from(text);
+  try {
+    while (buf.length) buf = buf.subarray(writeSync(fd, buf));
+  } catch {
+    (fd === 1 ? process.stdout : process.stderr).write(buf);
+  }
+}
+
+export const writeOut = (text: string) => writeFd(1, text);
+export const writeErr = (text: string) => writeFd(2, text);
 
 function paint(code: string, s: string): string {
   return ctx.useColor ? `${ESC}${code}m${s}${ESC}0m` : s;
@@ -40,7 +53,7 @@ function pad(s: string, n: number): string {
 const human = () => !ctx.flags.json && !ctx.flags.quiet;
 
 function out(s = ""): void {
-  if (human()) process.stdout.write(s + "\n");
+  if (human()) writeOut(s + "\n");
 }
 
 export const ui = {
@@ -53,7 +66,7 @@ export const ui = {
   hint: (msg: string) => out(c.dim(`   ${msg}`)),
   warn(msg: string): void {
     ctx.warnings.push(stripAnsi(msg));
-    if (!ctx.flags.json) process.stderr.write(`${icon("warn")}${c.warn(msg)}\n`);
+    if (!ctx.flags.json) writeErr(`${icon("warn")}${c.warn(msg)}\n`);
   },
   next(cmd: string, why = ""): void {
     ctx.next.push(cmd);
@@ -68,12 +81,12 @@ export const ui = {
   },
   explain(cmd: string, dry: boolean): void {
     if (ctx.flags.json && !dry) return;
-    process.stderr.write(c.dim(`   ${dry ? "would run" : "→"} ${cmd}\n`));
+    writeErr(c.dim(`   ${dry ? "would run" : "→"} ${cmd}\n`));
   },
   error(err: BuddyError): void {
-    process.stderr.write(`${icon("err")}${c.err(err.message)}\n`);
-    if (err.hint) process.stderr.write(c.dim(`   ${err.hint}\n`));
-    if (err.details && process.env.GITBUDDY_DEBUG) process.stderr.write(c.dim(err.details + "\n"));
+    writeErr(`${icon("err")}${c.err(err.message)}\n`);
+    if (err.hint) writeErr(c.dim(`   ${err.hint}\n`));
+    if (err.details && process.env.GITBUDDY_DEBUG) writeErr(c.dim(err.details + "\n"));
   },
 
   confirm(question: string, opts: { default?: boolean } = {}): boolean {
@@ -118,13 +131,13 @@ export const ui = {
     const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
     let i = 0;
     const timer = setInterval(() => {
-      process.stderr.write(`\r${c.accent(frames[i++ % frames.length])} ${label}`);
+      writeErr(`\r${c.accent(frames[i++ % frames.length])} ${label}`);
     }, 80);
     try {
       return await task();
     } finally {
       clearInterval(timer);
-      process.stderr.write(`\r${" ".repeat(width(label) + 4)}\r`);
+      writeErr(`\r${" ".repeat(width(label) + 4)}\r`);
     }
   },
 };

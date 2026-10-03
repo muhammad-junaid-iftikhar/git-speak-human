@@ -5,7 +5,7 @@ import { allCommands, define, findCommand, type CommandDef } from "../registry";
 import { currentBranch, defaultBranch, head, mainRemote, operation, remoteUrl, repoRoot, status } from "../repo";
 import { readJournal } from "../snapshot";
 import { readState } from "../state";
-import { c, ui } from "../ui";
+import { c, ui, writeOut } from "../ui";
 import { VERSION } from "../version";
 import { listWorkspaces } from "../workspaces";
 import { describe } from "./meta";
@@ -227,7 +227,7 @@ define({
       else if (def?.name === "restore" && inRepo) out = (tryOut(["for-each-ref", "--format=%(contents:subject)", "refs/gitbuddy/trash/"]) ?? "").split("\n").map((l) => l.replace(/^gitbuddy work: /, "")).filter(Boolean);
       else if (def?.options) out = Object.keys(def.options).map((k) => `--${k}`);
     }
-    if (!ctx.flags.json) process.stdout.write(out.join("\n") + (out.length ? "\n" : ""));
+    if (!ctx.flags.json) writeOut(out.join("\n") + (out.length ? "\n" : ""));
     ctx.data = { completions: out };
   },
 });
