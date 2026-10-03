@@ -126,14 +126,14 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 
 ## Phase 6 — Built for AI agents and LLMs (P1)
 
-- [ ] `--json` on every command: stable, versioned schema (`{ ok, command, data, warnings, next_steps }`). Never mixed with emoji or colour.
-- [ ] Auto-detect non-TTY or `CI` / `GITBUDDY_AGENT=1`: no prompts, no fun, no spinners. Fail with a clear code instead of hanging.
-- [ ] `gitbuddy commands --json`: machine-readable manifest of every command, its args, flags, side effects and whether it's destructive or undoable.
-- [ ] `gitbuddy state --json`: one call that returns everything an agent needs (branch, workspace, changes, ahead/behind, conflicts, last snapshot id).
-- [ ] **MCP server**: `gitbuddy mcp` exposes the commands as tools for Claude, Cursor and similar. Destructive tools are marked, and all of them return snapshot ids for undo.
-- [ ] `AGENTS.md` / `llms.txt` in the repo: short guide for agents ("always call `state` first; use `undo <id>` to roll back").
-- [ ] Every mutating command returns a `snapshot_id`, so an agent can always roll back its own action.
-- [ ] Deterministic output: no random text in `--json` mode; times in ISO 8601.
+- [x] `--json` on every command: stable, versioned schema (`{ ok, command, data, warnings, next_steps }`). Never mixed with emoji or colour.
+- [x] Auto-detect non-TTY or `CI` / `GITBUDDY_AGENT=1`: no prompts, no fun, no spinners. Fail with a clear code instead of hanging.
+- [x] `gitbuddy commands --json`: machine-readable manifest of every command, its args, flags, side effects and whether it's destructive or undoable.
+- [x] `gitbuddy state --json`: one call that returns everything an agent needs (branch, workspace, changes, ahead/behind, conflicts, last snapshot id).
+- [x] **MCP server**: `gitbuddy mcp` exposes the commands as tools for Claude, Cursor and similar. Destructive tools are marked, and all of them return snapshot ids for undo.
+- [x] `AGENTS.md` / `llms.txt` in the repo: short guide for agents ("always call `state` first; use `undo <id>` to roll back").
+- [x] Every mutating command returns a `snapshot_id`, so an agent can always roll back its own action.
+- [x] Deterministic output: no random text in `--json` mode; times in ISO 8601.
 
 ## Phase 7 — Distribution: install once, it just works (P1)
 

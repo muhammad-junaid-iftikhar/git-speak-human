@@ -1,0 +1,18 @@
+# gitbuddy
+
+> Git for humans: plain-English commands over real git, a snapshot before every change (so everything can be undone), workspaces for juggling tasks without branches, and a JSON/MCP interface for AI agents.
+
+Install: `bun install -g github:muhammad-junaid-iftikhar/git-speak-human` → command `gitbuddy`.
+
+## For agents
+
+- [AGENTS.md](AGENTS.md): JSON output shape, exit codes, error codes, MCP setup
+- Start every task with `gitbuddy state --json`; undo any change with `gitbuddy undo <snapshot_id>`
+- MCP server: `gitbuddy mcp` (stdio)
+- Full command list: `gitbuddy commands --json`
+
+## Docs
+
+- [README.md](README.md): overview and quick start
+- [CHEATSHEET.md](CHEATSHEET.md): git ↔ gitbuddy mapping
+- [task.md](task.md): roadmap
