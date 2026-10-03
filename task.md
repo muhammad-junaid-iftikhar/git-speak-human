@@ -169,11 +169,11 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [x] `gitbuddy protect main`: treat a branch as protected up front, so `send` goes straight to the PR flow (also learned automatically after a refusal).
 
 **2. Try someone else's branch without touching your work**
-- [ ] `gitbuddy try <branch>`: fetch it, make a local copy, tuck your unsaved work away and switch to the copy. `gitbuddy back` returns you exactly where you were.
-- [ ] `gitbuddy try <branch> --folder`: put the copy in a separate folder (git worktree), so you can run its tests side by side without switching at all.
-- [ ] `gitbuddy try` with no name: pick from remote branches sorted by latest activity, with author.
-- [ ] `gitbuddy try --refresh`: pull new saves on the branch you're trying.
-- [ ] `gitbuddy try --clean-up`: remove try-folders and copies.
+- [x] `gitbuddy try <branch>`: fetch it, make a local copy, tuck your unsaved work away and switch to the copy. `gitbuddy back` returns you exactly where you were.
+- [x] `gitbuddy try <branch> --folder`: put the copy in a separate folder (git worktree), so you can run its tests side by side without switching at all.
+- [x] `gitbuddy try` with no name: pick from remote branches sorted by latest activity, with author.
+- [x] `gitbuddy try --refresh`: pull new saves on the branch you're trying.
+- [x] `gitbuddy try --clean-up`: remove try-folders and copies.
 
 **3. Revert made easy, including a revert PR**
 - [ ] Rename `reverse` to `revert` (keep `reverse` as an alias).

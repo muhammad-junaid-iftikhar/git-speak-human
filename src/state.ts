@@ -10,7 +10,7 @@ export function stateDir(): string {
 }
 
 export interface Away {
-  kind: "time-travel" | "review";
+  kind: "time-travel" | "review" | "try";
   returnTo: string;
   returnDetached: boolean;
   tuckedRef?: string;
@@ -22,6 +22,7 @@ export interface RepoState {
   active?: string;
   away?: Away;
   lastAutosave?: string;
+  tryFolders?: string[];
 }
 
 export interface WorkspaceMeta {

@@ -147,3 +147,57 @@ describe("send handles team changes and protected branches", () => {
     expect(me.run("protect").json.data.protected).toEqual([]);
   });
 });
+
+describe("try someone's branch", () => {
+  function withTeamBranch() {
+    const { me, them, bare } = setup();
+    them.git("switch", "-q", "-c", "feature/x");
+    them.write("x.txt", "feature x\n");
+    them.run("done", "Feature X");
+    them.git("push", "-q", "-u", "origin", "feature/x");
+    return { me, them, bare };
+  }
+
+  test("try switches to a copy, tucks my work, back restores it", () => {
+    const { me } = withTeamBranch();
+    me.write("mine.txt", "wip\n");
+    const r = me.run("try", "feature/x");
+    expect(r.json.ok).toBe(true);
+    expect(me.git("branch", "--show-current")).toBe("try/feature/x");
+    expect(me.read("x.txt")).toBe("feature x\n");
+    expect(me.exists("mine.txt")).toBe(false);
+    expect(me.run("state").json.data.away.kind).toBe("try");
+    me.run("back");
+    expect(me.git("branch", "--show-current")).toBe("main");
+    expect(me.read("mine.txt")).toBe("wip\n");
+    expect(me.exists("x.txt")).toBe(false);
+  });
+
+  test("try --folder makes a separate copy and leaves my work alone", () => {
+    const { me } = withTeamBranch();
+    me.write("mine.txt", "wip\n");
+    const r = me.run("try", "feature/x", "--folder");
+    const dir = r.json.data.folder;
+    expect(require("node:fs").readFileSync(`${dir}/x.txt`, "utf-8")).toBe("feature x\n");
+    expect(me.read("mine.txt")).toBe("wip\n");
+    expect(me.git("branch", "--show-current")).toBe("main");
+    expect(me.run("try", "--clean-up").json.data.removedFolders).toEqual([dir]);
+    expect(require("node:fs").existsSync(dir)).toBe(false);
+  });
+
+  test("try --refresh gets new saves on that branch", () => {
+    const { me, them } = withTeamBranch();
+    me.run("try", "feature/x");
+    them.write("x2.txt", "more\n");
+    them.run("done", "More X");
+    them.git("push", "-q");
+    me.run("try", "--refresh");
+    expect(me.read("x2.txt")).toBe("more\n");
+  });
+
+  test("try without a name lists branches; unknown name suggests", () => {
+    const { me } = withTeamBranch();
+    expect(me.run("try").json.data.branches.map((b: any) => b.name)).toContain("feature/x");
+    expect(me.run("try", "feature").json.error.hint).toContain("feature/x");
+  });
+});

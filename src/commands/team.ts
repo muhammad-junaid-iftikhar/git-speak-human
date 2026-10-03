@@ -1,8 +1,10 @@
+import { existsSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
 import { ctx } from "../context";
 import { EXIT, fail } from "../errors";
 import { git, gitAsync, gitInherit, out, tryOut } from "../git";
 import { define } from "../registry";
-import { currentBranch, defaultBranch, head, isDirty, isPushed, mainRemote, operation, remoteUrl, resolveWhen, shortId, slugify } from "../repo";
+import { currentBranch, defaultBranch, head, isDirty, isPushed, mainRemote, operation, remoteUrl, repoRoot, resolveWhen, shortId, slugify } from "../repo";
 import { record } from "../snapshot";
 import { readState, updateState } from "../state";
 import { ago, c, plural, ui } from "../ui";
@@ -331,5 +333,145 @@ define({
       });
     ctx.data = { branches: list };
     ui.table(list.map((b) => [b.current ? c.accent("▶") : " ", b.current ? c.bold(b.name) : b.name, c.dim(ago(b.date)), b.subject.slice(0, 50), c.dim(b.track)]));
+  },
+});
+
+function testCommand(dir: string): string | null {
+  const has = (f: string) => existsSync(join(dir, f));
+  if (has("bun.lockb") || has("bun.lock")) return "bun test";
+  if (has("pnpm-lock.yaml")) return "pnpm test";
+  if (has("yarn.lock")) return "yarn test";
+  if (has("package.json")) return "npm test";
+  if (has("pyproject.toml") || has("pytest.ini")) return "pytest";
+  if (has("go.mod")) return "go test ./...";
+  if (has("Cargo.toml")) return "cargo test";
+  if (has("composer.json")) return "composer test";
+  return null;
+}
+
+function remoteBranches(remote: string) {
+  const raw = tryOut(["for-each-ref", "--sort=-committerdate", "--format=%(refname:short)\x1f%(committerdate:iso-strict)\x1f%(authorname)\x1f%(subject)", `refs/remotes/${remote}`]) ?? "";
+  return raw
+    .split("\n")
+    .filter(Boolean)
+    .map((l) => {
+      const [ref, date, author, subject] = l.split("\x1f");
+      return { name: ref.slice(remote.length + 1), date, author, subject };
+    })
+    .filter((b) => b.name && b.name !== "HEAD" && b.name !== remote);
+}
+
+define({
+  name: "try",
+  aliases: ["test-branch", "checkout"],
+  group: "team",
+  summary: "Try someone's branch locally (as a copy), then come back",
+  gitEquivalent: "git fetch && git switch -c try/<branch> origin/<branch>  (or git worktree add)",
+  args: [{ name: "branch", description: "The branch to try (leave out to pick from a list)" }],
+  options: {
+    folder: { type: "boolean", short: "f", description: "Put the copy in a separate folder so your work isn't touched at all" },
+    refresh: { type: "boolean", description: "Get the newest saves on the branch you're trying" },
+    "clean-up": { type: "boolean", description: "Remove all try-copies and try-folders" },
+  },
+  mutates: true,
+  undoable: true,
+  network: true,
+  examples: ["gitbuddy try feature/login", "gitbuddy try feature/login --folder", "gitbuddy try", "gitbuddy back"],
+  async run({ args, opts }) {
+    const remote = mainRemote();
+    if (!remote) fail("Connect this project first.", { exit: EXIT.SETUP, code: "no_remote", hint: "gitbuddy connect <url>" });
+    const root = repoRoot()!;
+    const state = readState();
+
+    if (opts["clean-up"]) {
+      const folders = state.tryFolders ?? [];
+      for (const dir of folders) git(["worktree", "remove", "--force", dir], { mutates: true, allowFail: true });
+      git(["worktree", "prune"], { mutates: true, allowFail: true });
+      const current = currentBranch();
+      const copies = (tryOut(["for-each-ref", "--format=%(refname:short)", "refs/heads/try/"]) ?? "").split("\n").filter((b) => b && b !== current);
+      for (const b of copies) git(["branch", "-q", "-D", b], { mutates: true, allowFail: true });
+      if (!ctx.flags.dryRun) updateState((s) => (s.tryFolders = []));
+      ui.say("clean", c.ok(`Removed ${plural(folders.length, "try-folder")} and ${plural(copies.length, "try-copy", "try-copies")}.`));
+      ctx.data = { removedFolders: folders, removedCopies: copies };
+      return;
+    }
+
+    if (opts.refresh) {
+      const away = state.away;
+      const name = away?.kind === "try" ? away.tempBranch?.replace(/^try\//, "") : currentBranch()?.replace(/^try\//, "");
+      if (!name || (away?.kind !== "try" && !currentBranch()?.startsWith("try/"))) fail("You're not trying a branch right now.", { hint: "gitbuddy try <branch>" });
+      await ui.spin(`Getting the newest ${name}…`, () => gitAsync(["fetch", "-q", remote!], { mutates: true }));
+      if (isDirty()) fail("You changed files in this copy. Throw them away first (gitbuddy throw-away) to refresh.", { code: "dirty" });
+      git(["reset", "-q", "--hard", `${remote}/${name}`], { mutates: true });
+      ui.say("get", c.ok(`Your copy of ${name} is up to date.`));
+      ctx.data = { refreshed: name };
+      return;
+    }
+
+    await ui.spin(`${c.accent("Checking")} ${remote} for branches…`, () => gitAsync(["fetch", "-q", "--prune", remote!], { mutates: true }));
+    const branches = remoteBranches(remote!);
+    let name = args[0]?.replace(new RegExp(`^${remote}/`), "");
+    if (!name) {
+      if (!ctx.interactive) {
+        ctx.data = { branches };
+        ui.table(branches.slice(0, 20).map((b) => [c.accent(b.name), c.dim(`${b.author} · ${ago(b.date)}`), b.subject.slice(0, 50)]));
+        ui.next("gitbuddy try <branch>");
+        return;
+      }
+      name = ui.pick(
+        "Which branch do you want to try?",
+        branches.slice(0, 25).map((b) => ({ label: `${b.name} ${c.dim(`· ${b.author} · ${ago(b.date)} · ${b.subject.slice(0, 40)}`)}`, value: b.name })),
+      );
+    }
+    const found = branches.find((b) => b.name === name);
+    if (!found) {
+      const close = branches.filter((b) => b.name.includes(name!) || name!.includes(b.name)).map((b) => b.name);
+      fail(`${remote} has no branch called "${name}".`, { code: "no_such_branch", hint: close.length ? `Did you mean: ${close.slice(0, 5).join(", ")}?` : "See them: gitbuddy try" });
+    }
+    const remoteRef = `${remote}/${name}`;
+    const copy = `try/${name}`;
+    const base = defaultBranch();
+    const baseRef = tryOut(["rev-parse", "-q", "--verify", `refs/remotes/${remote}/${base}`]) ? `${remote}/${base}` : base;
+    const commits = logEntries([`${baseRef}..${remoteRef}`, "-n10"]);
+    const files = (tryOut(["diff", "--name-only", `${baseRef}...${remoteRef}`]) ?? "").split("\n").filter(Boolean);
+
+    if (opts.folder) {
+      const dir = join(dirname(root), `${basename(root)}-try-${slugify(name!)}`);
+      if (existsSync(dir)) {
+        const r = git(["-C", dir, "reset", "-q", "--hard", remoteRef], { mutates: true, allowFail: true });
+        if (!r.ok) fail(`The folder ${dir} already exists and isn't a try-copy.`, { hint: "Remove it or use gitbuddy try --clean-up" });
+      } else git(["worktree", "add", "-q", "-B", copy, dir, remoteRef], { mutates: true });
+      if (!ctx.flags.dryRun) updateState((s) => (s.tryFolders = [...new Set([...(s.tryFolders ?? []), dir])]));
+      ui.say("search", c.ok(`A copy of ${c.bold(name!)} is ready in its own folder`) + c.dim(` · ${plural(commits.length, "save")} ahead of ${base}, ${plural(files.length, "file")} changed`));
+      ui.line(`   ${c.accent(dir)}`);
+      const test = testCommand(dir);
+      ui.next(`cd "${dir}"`, test ? `then run: ${test}` : "run it there");
+      ui.hint("Your own work here is untouched. Remove copies later with: gitbuddy try --clean-up");
+      ctx.data = { branch: name, folder: dir, copy, commits: commits.map((e) => e.commit), files };
+      return;
+    }
+
+    if (state.away) fail(`You're already ${state.away.label}.`, { hint: "gitbuddy back" });
+    if (operation()) fail("Finish the current clash first.", { exit: EXIT.CONFLICT, code: "conflict", hint: "gitbuddy conflicts" });
+    record("try", `before trying ${name}`);
+    const from = currentBranch();
+    const prior = head();
+    let tucked: string | undefined;
+    if (isDirty()) {
+      git(["stash", "push", "-u", "-q", "-m", `gitbuddy: tucked away while trying ${name}`], { mutates: true });
+      tucked = ctx.flags.dryRun ? undefined : out(["rev-parse", "stash@{0}"]);
+    }
+    git(["switch", "-q", "-C", copy, remoteRef], { mutates: true });
+    git(["branch", "-q", "--unset-upstream"], { mutates: true, allowFail: true });
+    if (!ctx.flags.dryRun) updateState((s) => (s.away = { kind: "try", label: `trying ${name}`, returnTo: from ?? prior ?? "", returnDetached: !from, tuckedRef: tucked, tempBranch: copy }));
+    ui.say("search", c.ok(`You're now trying ${c.bold(name!)}`) + c.dim(` (a copy, by ${found!.author}, ${ago(found!.date)})`));
+    for (const e of commits.slice(0, 6)) ui.line(`   ${c.accent(e.id)} ${e.message} ${c.dim(`${e.author} · ${ago(e.date)}`)}`);
+    if (files.length) ui.hint(`${plural(files.length, "file")} differ from ${base}.`);
+    if (tucked) ui.hint("Your unsaved work is tucked away safely.");
+    const test = testCommand(root);
+    if (test) ui.hint(`Run the tests: ${test}`);
+    ui.next("gitbuddy back", "return to your own work");
+    ui.hint("Newer saves on that branch? gitbuddy try --refresh");
+    ctx.data = { branch: name, copy, commits: commits.map((e) => e.commit), files, tucked: Boolean(tucked) };
   },
 });
