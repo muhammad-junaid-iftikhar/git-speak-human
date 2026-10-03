@@ -1,6 +1,6 @@
 {
   "name": "git-speak-human",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "gitbuddy: git for humans. Plain-English commands, nothing ever lost, fun to use, and friendly to AI agents.",
   "type": "module",
   "bin": {
