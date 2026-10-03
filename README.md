@@ -33,6 +33,9 @@ buddy what-happened                 # See recent changes
 | `switch` | `go`, `move`, `checkout` | Switch to another piece of work |
 | `oops` | `undo`, `revert` | Undo your last action |
 | `what-happened` | `history`, `log`, `timeline` | See what everyone did recently |
+| `stash` | `save-for-later`, `pause` | Save work temporarily without committing |
+| `my-stashes` | `stashes`, `saved`, `list-stash` | See all your saved work |
+| `get-back` | `restore-stash`, `pop` | Get back your most recent saved work |
 
 ## Examples
 
@@ -63,6 +66,20 @@ buddy show
 **Undo a mistake:**
 ```bash
 buddy oops
+```
+
+**Save work for later (without committing):**
+```bash
+buddy stash "still working on this feature"
+# Switch to another branch, do other work
+buddy get
+buddy switch my-feature
+buddy get-back              # Get your saved work back
+```
+
+**See all your saved work:**
+```bash
+buddy my-stashes
 ```
 
 ---

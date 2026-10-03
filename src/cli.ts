@@ -119,6 +119,47 @@ const commands: Command[] = [
     },
   },
   {
+    name: "stash",
+    aliases: ["save-for-later", "pause"],
+    description: "Save work temporarily without committing",
+    run: (args) => {
+      const message = args.join(" ") || "Work in progress";
+      console.log(`💾 Saving for later: "${message}"`);
+      run("git add .");
+      run(`git stash push -m "${message}"`);
+      console.log("✅ Work saved! Use 'buddy get-back' to restore it.");
+    },
+  },
+  {
+    name: "my-stashes",
+    aliases: ["stashes", "saved", "list-stash"],
+    description: "See all your saved work",
+    run: () => {
+      const stashes = run("git stash list");
+      if (!stashes) {
+        console.log("📭 No saved work yet!");
+        return;
+      }
+      console.log("\n💾 Your saved work:");
+      console.log(stashes);
+      console.log();
+    },
+  },
+  {
+    name: "get-back",
+    aliases: ["restore-stash", "pop"],
+    description: "Get back your most recent saved work",
+    run: () => {
+      console.log("📤 Getting back your work...");
+      try {
+        run("git stash pop");
+        console.log("✅ Work restored!");
+      } catch (error) {
+        console.log("❌ No saved work to restore!");
+      }
+    },
+  },
+  {
     name: "help",
     aliases: ["h", "-h", "--help"],
     description: "Show this help message",
@@ -147,6 +188,9 @@ Examples:
   buddy switch main
   buddy oops
   buddy what-happened
+  buddy stash "working on dark mode"
+  buddy my-stashes
+  buddy get-back
 `);
     },
   },
