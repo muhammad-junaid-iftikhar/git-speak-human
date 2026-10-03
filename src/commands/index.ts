@@ -1,6 +1,11 @@
+import "./start";
 import "./everyday";
 import "./work";
 import "./safety";
+import "./history";
+import "./fix";
 import "./conflicts";
+import "./team";
+import "./release";
 import "./agent";
 import "./meta";

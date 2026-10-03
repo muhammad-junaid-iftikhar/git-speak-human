@@ -71,45 +71,45 @@ The main idea: users see **workspaces**, not branches or stashes.
 Each row gets a command, plain-English output, `--explain` and `--json`.
 
 **Starting**
-- [ ] `gitbuddy new` (init plus a sensible .gitignore picked by detecting the project type) · `gitbuddy copy <url>` (clone) · `gitbuddy connect <url>` (add remote, or create a GitHub repo with `gh`)
+- [x] `gitbuddy new` (init plus a sensible .gitignore picked by detecting the project type) · `gitbuddy copy <url>` (clone) · `gitbuddy connect <url>` (add remote, or create a GitHub repo with `gh`)
 
 **Everyday**
-- [ ] `gitbuddy show` (status grouped as new / changed / deleted / ready-to-save, with tips)
-- [ ] `gitbuddy diff` / `what-changed [file]`: pretty diff, word-level when useful
-- [ ] `gitbuddy done "msg"`: commit. Pick files with `--only <files>`, or interactively.
-- [ ] `gitbuddy done` with no message: suggest one from the diff (optional local or LLM provider; works without AI too)
-- [ ] `gitbuddy fix-last "new msg"` / `--add file`: amend, only if not pushed
-- [ ] `gitbuddy send` (push; set upstream automatically) · `gitbuddy get` (pull, rebase by default, explained)
-- [ ] `gitbuddy sync`: get plus send in one step
+- [x] `gitbuddy show` (status grouped as new / changed / deleted / ready-to-save, with tips)
+- [x] `gitbuddy diff` / `what-changed [file]`: pretty diff, word-level when useful
+- [x] `gitbuddy done "msg"`: commit. Pick files with `--only <files>`, or interactively.
+- [x] `gitbuddy done` with no message: suggest one from the diff (optional local or LLM provider; works without AI too)
+- [x] `gitbuddy fix-last "new msg"` / `--add file`: amend, only if not pushed
+- [x] `gitbuddy send` (push; set upstream automatically) · `gitbuddy get` (pull, rebase by default, explained)
+- [x] `gitbuddy sync`: get plus send in one step
 
 **History and finding things**
-- [ ] `gitbuddy history`: readable timeline with relative dates and authors, filter by file, person or date
-- [ ] `gitbuddy who <file>[:line]`: blame in plain English
-- [ ] `gitbuddy find "text"`: search code across history (`log -S`, `grep`)
-- [ ] `gitbuddy when-broke`: guided bisect ("does it work now? y/n")
-- [ ] `gitbuddy go-back <file> [to <when>]`: restore a file from the past ("yesterday", "3 saves ago")
-- [ ] `gitbuddy time-travel <when>`: look at the whole project in the past without breaking anything, and come back safely
+- [x] `gitbuddy history`: readable timeline with relative dates and authors, filter by file, person or date
+- [x] `gitbuddy who <file>[:line]`: blame in plain English
+- [x] `gitbuddy find "text"`: search code across history (`log -S`, `grep`)
+- [x] `gitbuddy when-broke`: guided bisect ("does it work now? y/n")
+- [x] `gitbuddy go-back <file> [to <when>]`: restore a file from the past ("yesterday", "3 saves ago")
+- [x] `gitbuddy time-travel <when>`: look at the whole project in the past without breaking anything, and come back safely
 
 **Fixing mistakes**
-- [ ] `gitbuddy throw-away [file]`: discard changes, with a snapshot first
-- [ ] `gitbuddy unsave`: uncommit and keep the changes
-- [ ] `gitbuddy reverse <save>`: revert a pushed commit safely
-- [ ] `gitbuddy ignore <file|pattern>`: add to .gitignore and untrack if already tracked
-- [ ] `gitbuddy forget-file`: remove a secret from history (guided `filter-repo`, with big warnings)
+- [x] `gitbuddy throw-away [file]`: discard changes, with a snapshot first
+- [x] `gitbuddy unsave`: uncommit and keep the changes
+- [x] `gitbuddy reverse <save>`: revert a pushed commit safely
+- [x] `gitbuddy ignore <file|pattern>`: add to .gitignore and untrack if already tracked
+- [x] `gitbuddy forget-file`: remove a secret from history (guided `filter-repo`, with big warnings)
 
 **Teamwork**
-- [ ] Conflict helper: list conflicted files, show "yours vs theirs" side by side, choose per file or open the editor, then continue
-- [ ] `gitbuddy share`: open a PR/MR (GitHub `gh`, GitLab `glab`) with a title and body made from the commits
-- [ ] `gitbuddy review <pr>`: check out someone's PR into a temporary workspace
-- [ ] `gitbuddy combine` (merge/squash) · `gitbuddy tidy` (interactive rebase as a simple "reorder / squash / reword" list)
-- [ ] `gitbuddy grab <save>`: cherry-pick
+- [x] Conflict helper: list conflicted files, show "yours vs theirs" side by side, choose per file or open the editor, then continue
+- [x] `gitbuddy share`: open a PR/MR (GitHub `gh`, GitLab `glab`) with a title and body made from the commits
+- [x] `gitbuddy review <pr>`: check out someone's PR into a temporary workspace
+- [x] `gitbuddy combine` (merge/squash) · `gitbuddy tidy` (interactive rebase as a simple "reorder / squash / reword" list)
+- [x] `gitbuddy grab <save>`: cherry-pick
 
 **Releases and extras**
-- [ ] `gitbuddy release v1.2.0`: tag, changelog from commits, push tags
-- [ ] `gitbuddy tags`, `gitbuddy versions`
-- [ ] Submodules, worktrees, LFS, sparse checkout: wrapped later (P3), clearly labelled as advanced
-- [ ] `gitbuddy clean-up`: prune merged branches, stale remotes, gc
-- [ ] `gitbuddy git <anything>`: pass straight through to git as an escape hatch
+- [x] `gitbuddy release v1.2.0`: tag, changelog from commits, push tags
+- [x] `gitbuddy versions` (aliases: tags, releases)
+- [ ] Submodules, worktrees, LFS, sparse checkout: wrapped later (P3), clearly labelled as advanced. For now: `gitbuddy git submodule …` etc.
+- [x] `gitbuddy clean-up`: prune merged branches, stale remotes, gc
+- [x] `gitbuddy git <anything>`: pass straight through to git as an escape hatch
 
 ## Phase 5 — Fun, personality and profile (P2)
 

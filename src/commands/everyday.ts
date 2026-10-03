@@ -218,7 +218,7 @@ function requireBranch(): string {
   return branch!;
 }
 
-export async function sendWork(opts: { allowSecrets?: boolean } = {}): Promise<void> {
+export async function sendWork(opts: { allowSecrets?: boolean; force?: boolean } = {}): Promise<void> {
   const remote = requireRemote();
   const branch = requireBranch();
   if (!head()) fail("There's nothing saved yet to send.", { hint: 'Save first: gitbuddy done "first save"' });
@@ -227,6 +227,14 @@ export async function sendWork(opts: { allowSecrets?: boolean } = {}): Promise<v
   const ahead = target
     ? aheadBehind()?.ahead ?? 0
     : Number(out(["rev-list", "--count", "HEAD", "--not", `--remotes=${remote}`]));
+  if (opts.force) {
+    if (!ui.confirm("Overwrite the remote with your history? Saves only on the remote will be lost.", { default: false })) return;
+    const args = target ? ["push", "--force-with-lease", target.remote, `HEAD:${target.ref}`] : ["push", "--force-with-lease", "-u", remote, branch];
+    await ui.spin(`${c.accent("Overwriting")} ${remote}…`, () => gitAsync(args, { mutates: true }));
+    ui.say("send", c.ok(`Overwrote ${remote} with your history.`));
+    ctx.data = { sent: ahead, remote, branch, forced: true };
+    return;
+  }
   if (target && ahead === 0) {
     ui.say("clean", "Nothing new to send. Your team already has all your saves.");
     ctx.data = { sent: 0 };
@@ -288,11 +296,14 @@ define({
   group: "everyday",
   summary: "Send your saves to your team (GitHub, GitLab…)",
   gitEquivalent: "git push",
-  options: { "allow-secrets": { type: "boolean", description: "Send even if a save looks like it contains a secret" } },
+  options: {
+    "allow-secrets": { type: "boolean", description: "Send even if a save looks like it contains a secret" },
+    force: { type: "boolean", description: "Overwrite the remote with your history (after forget-file or tidy)" },
+  },
   mutates: true,
   network: true,
   examples: ["gitbuddy send"],
-  run: ({ opts }) => sendWork({ allowSecrets: Boolean(opts["allow-secrets"]) }),
+  run: ({ opts }) => sendWork({ allowSecrets: Boolean(opts["allow-secrets"]), force: Boolean(opts.force) }),
 });
 
 define({
