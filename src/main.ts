@@ -54,6 +54,10 @@ export function splitGlobals(argv: string[]): { flags: Partial<Flags>; rest: str
       flags[GLOBAL[a]] = true;
       continue;
     }
+    if ((a === "--version" || a === "-v" || a === "-V") && !rest.length) {
+      rest.push("version");
+      continue;
+    }
     if (a === "--help" || a === "-h") {
       help = true;
       continue;

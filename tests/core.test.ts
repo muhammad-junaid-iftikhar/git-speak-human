@@ -102,3 +102,13 @@ describe("dry run and explain", () => {
     expect(r.stderr).toContain("git commit");
   });
 });
+
+describe("version", () => {
+  test("--version, -v and version all work", () => {
+    const s = new Sandbox();
+    const pkg = require("../package.json");
+    expect(s.run("--version").json.data.version).toBe(pkg.version);
+    expect(s.human("-v", "--short").stdout.trim()).toBe(pkg.version);
+    expect(s.run("version").json.data.git).toBeTruthy();
+  });
+});

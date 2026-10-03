@@ -1,3 +1,5 @@
+import { join } from "node:path";
+import { homeDir, readJSON } from "../config";
 import { ctx } from "../context";
 import { fail } from "../errors";
 import { GROUPS, allCommands, define, findCommand, suggestCommand, type CommandDef } from "../registry";
@@ -96,8 +98,28 @@ define({
   group: "you",
   summary: "Show which gitbuddy you have",
   needsRepo: false,
-  run() {
-    ctx.data = { version: VERSION };
-    ui.line(`gitbuddy ${VERSION}`);
+  options: { short: { type: "boolean", description: "Only print the version number" } },
+  run({ opts }) {
+    const git = Bun.spawnSync(["git", "--version"], { stdout: "pipe" }).stdout?.toString().trim().replace(/^git version /, "") ?? "not installed";
+    const binary = !process.argv[1]?.endsWith(".ts");
+    const update = readJSON<{ latest?: string }>(join(homeDir(), "update.json"), {});
+    const newer = update.latest && update.latest !== VERSION && update.latest.localeCompare(VERSION, undefined, { numeric: true }) > 0 ? update.latest : null;
+    ctx.data = {
+      version: VERSION,
+      git,
+      bun: process.versions.bun ?? null,
+      install: binary ? "standalone" : "bun",
+      os: `${process.platform}-${process.arch}`,
+      latest: update.latest ?? null,
+      updateAvailable: Boolean(newer),
+    };
+    if (opts.short) return ui.line(VERSION);
+    ui.line(`${theme().mascot}  ${c.bold(`gitbuddy ${VERSION}`)}`);
+    ui.table([
+      [c.dim("git"), git],
+      [c.dim("runtime"), binary ? "standalone binary" : `bun ${process.versions.bun}`],
+      [c.dim("system"), `${process.platform} ${process.arch}`],
+    ]);
+    if (newer) ui.next("gitbuddy update", `version ${newer} is out`);
   },
 });
