@@ -1,25 +1,42 @@
 {
   "name": "git-speak-human",
-  "version": "0.0.1",
-  "description": "Git for people who don't know git. Just speak what you want to do.",
+  "version": "0.1.0",
+  "description": "gitbuddy: git for humans. Plain-English commands, nothing ever lost, fun to use, and friendly to AI agents.",
   "type": "module",
   "bin": {
     "gitbuddy": "./src/cli.ts"
   },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "bun": ">=1.0.0"
+  },
   "scripts": {
     "dev": "bun src/cli.ts",
-    "build": "bun build src/cli.ts --outfile dist/cli.js --target bun",
-    "test": "bun test"
+    "test": "bun test",
+    "build": "bun build src/cli.ts --compile --outfile dist/gitbuddy"
   },
   "keywords": [
     "git",
     "cli",
     "beginner",
-    "simple",
+    "workspaces",
+    "undo",
+    "mcp",
+    "ai-agents",
     "human"
   ],
   "author": "Muhammad Junaid Iftikhar",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muhammad-junaid-iftikhar/git-speak-human.git"
+  },
+  "homepage": "https://github.com/muhammad-junaid-iftikhar/git-speak-human#readme",
+  "bugs": "https://github.com/muhammad-junaid-iftikhar/git-speak-human/issues",
   "devDependencies": {
     "@types/bun": "latest"
   }
