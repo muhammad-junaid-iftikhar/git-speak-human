@@ -160,6 +160,43 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 - [x] LICENSE file (MIT), CONTRIBUTING.md, issue templates, CODE_OF_CONDUCT.
 - [ ] Opt-in, anonymous usage stats only if ever needed. Off by default.
 
+## Phase 9 — Everyday pain points from real use (P0)
+
+**1. Push/pull clashes and protected main**
+- [ ] `send` first checks the remote. If teammates pushed to the same branch, it gets their saves, puts yours on top (snapshot first), then sends. No more "rejected, fetch first".
+- [ ] If the push is still rejected because someone pushed in between, retry automatically once.
+- [ ] Protected branches: if the remote refuses a push to `main` (protected branch), move your saves to a new branch, send it, open a PR, and reset local `main` to match the remote, all in one go.
+- [ ] `gitbuddy config set protected main,develop`: treat these as protected up front, so `send` goes straight to the PR flow.
+
+**2. Try someone else's branch without touching your work**
+- [ ] `gitbuddy try <branch>`: fetch it, make a local copy, tuck your unsaved work away and switch to the copy. `gitbuddy back` returns you exactly where you were.
+- [ ] `gitbuddy try <branch> --folder`: put the copy in a separate folder (git worktree), so you can run its tests side by side without switching at all.
+- [ ] `gitbuddy try` with no name: pick from remote branches sorted by latest activity, with author.
+- [ ] `gitbuddy try --refresh`: pull new saves on the branch you're trying.
+- [ ] `gitbuddy try --clean-up`: remove try-folders and copies.
+
+**3. Revert made easy, including a revert PR**
+- [ ] Rename `reverse` to `revert` (keep `reverse` as an alias).
+- [ ] `gitbuddy revert` with no argument: pick from recent saves and merged PRs.
+- [ ] `gitbuddy revert --pr 42`: find what PR #42 merged and revert all of it.
+- [ ] `gitbuddy revert <a>..<b>` / several ids: revert multiple saves as one.
+- [ ] On a protected/default branch with a remote, revert opens a revert PR automatically: branch from the latest `origin/main`, revert there, send, open the PR, then bring you back. `--here` reverts locally instead.
+- [ ] Explain before doing it: which saves and files will be reverted.
+
+**4. Proper versions**
+- [ ] `gitbuddy --version` / `-v` work, and `gitbuddy version` shows git, Bun, install method and whether an update is available.
+- [ ] Bump to 0.2.0, write CHANGELOG.md, tag `v0.2.0` and publish a GitHub Release with binaries via the release workflow, so the one-line installers work.
+
+**5. Terminal themes: a whole look in one pick**
+- [ ] A theme is one JSON file (`themes/<name>.json`): Terminal.app colors (background, text, cursor, selection, 16 ANSI colors), font and size, opacity/blur, Starship prompt, zsh extras (autosuggestion and syntax-highlighting colors, history settings), recommended tools, and the gitbuddy palette.
+- [ ] `gitbuddy theme`: list themes with a colour preview. `gitbuddy theme <name>` applies everything: creates the Terminal.app profile and makes it the default, updates open windows, installs the prompt and zsh extras through one managed line in `~/.zshrc`, and offers to install missing fonts/tools with brew.
+- [ ] Before the first apply, save your current setup as a theme (`my-original`), so `gitbuddy theme my-original` always takes you back.
+- [ ] `gitbuddy theme save <name>`: capture your current Terminal.app profile, Starship config and zsh extras into a theme file you can share.
+- [ ] `gitbuddy theme random` and `gitbuddy theme daily on`: a new look every day for people who get bored.
+- [ ] Built-in themes: `juni` (your current setup), dracula, nord, tokyo-night, catppuccin-mocha, gruvbox, solarized-dark, synthwave, rose-pine, pirate.
+- [ ] Community themes: anyone adds `themes/<name>.json` by PR (guide in CONTRIBUTING.md, validated in CI). `gitbuddy theme --online` lists the latest from GitHub.
+- [ ] Later: iTerm2, Ghostty, Warp, Windows Terminal, GNOME Terminal backends.
+
 ---
 
 ## Suggested order
