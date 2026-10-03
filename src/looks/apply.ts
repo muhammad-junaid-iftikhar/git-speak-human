@@ -8,7 +8,8 @@ export const BLOCK_START = "# >>> gitbuddy theme >>>";
 export const BLOCK_END = "# <<< gitbuddy theme <<<";
 
 const shellDir = () => join(homeDir(), "shell");
-export const rcFile = () => join(process.env.ZDOTDIR || homedir(), ".zshrc");
+const userHome = () => process.env.HOME || homedir();
+export const rcFile = () => join(process.env.ZDOTDIR || userHome(), ".zshrc");
 
 export function canStyleTerminal(): boolean {
   return process.platform === "darwin" && !process.env.GITBUDDY_NO_TERMINAL;
@@ -215,7 +216,7 @@ export function captureTerminal(profile?: string): { profile: string; terminal: 
 }
 
 export function currentStarship(): string | null {
-  const file = process.env.STARSHIP_CONFIG && !process.env.STARSHIP_CONFIG.includes("/gitbuddy/shell/") ? process.env.STARSHIP_CONFIG : join(homedir(), ".config", "starship.toml");
+  const file = process.env.STARSHIP_CONFIG && !process.env.STARSHIP_CONFIG.includes("/gitbuddy/shell/") ? process.env.STARSHIP_CONFIG : join(userHome(), ".config", "starship.toml");
   return existsSync(file) ? readFileSync(file, "utf-8") : null;
 }
 
@@ -282,8 +283,8 @@ export const TOOL_CHECK: Record<string, { check: () => boolean; brew: string }> 
   bat: { check: () => Boolean(Bun.which("bat")), brew: "bat" },
   fzf: { check: () => Boolean(Bun.which("fzf")), brew: "fzf" },
   zoxide: { check: () => Boolean(Bun.which("zoxide")), brew: "zoxide" },
-  "zsh-autosuggestions": { check: () => ["/opt/homebrew/share/zsh-autosuggestions", "/usr/local/share/zsh-autosuggestions", join(homedir(), ".oh-my-zsh/custom/plugins/zsh-autosuggestions")].some(existsSync), brew: "zsh-autosuggestions" },
-  "zsh-syntax-highlighting": { check: () => ["/opt/homebrew/share/zsh-syntax-highlighting", "/usr/local/share/zsh-syntax-highlighting", join(homedir(), ".oh-my-zsh/custom/plugins/zsh-syntax-highlighting")].some(existsSync), brew: "zsh-syntax-highlighting" },
+  "zsh-autosuggestions": { check: () => ["/opt/homebrew/share/zsh-autosuggestions", "/usr/local/share/zsh-autosuggestions", join(userHome(), ".oh-my-zsh/custom/plugins/zsh-autosuggestions")].some(existsSync), brew: "zsh-autosuggestions" },
+  "zsh-syntax-highlighting": { check: () => ["/opt/homebrew/share/zsh-syntax-highlighting", "/usr/local/share/zsh-syntax-highlighting", join(userHome(), ".oh-my-zsh/custom/plugins/zsh-syntax-highlighting")].some(existsSync), brew: "zsh-syntax-highlighting" },
 };
 
 export function missingTools(look: Look): string[] {
