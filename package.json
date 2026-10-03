@@ -1,0 +1,26 @@
+{
+  "name": "git-speak-human",
+  "version": "0.0.1",
+  "description": "Git for people who don't know git. Just speak what you want to do.",
+  "type": "module",
+  "bin": {
+    "speak": "./src/cli.ts"
+  },
+  "scripts": {
+    "dev": "bun src/cli.ts",
+    "build": "bun build src/cli.ts --outfile dist/cli.js --target bun",
+    "test": "bun test"
+  },
+  "keywords": [
+    "git",
+    "cli",
+    "beginner",
+    "simple",
+    "human"
+  ],
+  "author": "Muhammad Junaid Iftikhar",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
