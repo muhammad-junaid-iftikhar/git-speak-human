@@ -314,7 +314,7 @@ define({
         const r = git(["bisect", "run", ...sh, String(opts.run)], { mutates: true, allowFail: true });
         said = r.stdout + r.stderr;
       } else {
-        while (!/is the first bad commit/.test(said)) {
+        while (!/is the first '?bad'? commit/.test(said)) {
           const left = said.match(/roughly (\d+) steps?/)?.[1];
           const [id, msg, date] = out(["log", "-1", `--format=%h${SEP}%s${SEP}%aI`]).split(SEP);
           ui.blank();
@@ -329,7 +329,7 @@ define({
       }
       const log = git(["bisect", "log"], { allowFail: true }).stdout;
       trail = `${said}\n${log}`;
-      culprit = log.match(/# first bad commit: \[([0-9a-f]{40})\]/)?.[1] ?? said.match(/([0-9a-f]{40}) is the first bad commit/)?.[1] ?? "";
+      culprit = log.match(/# first '?bad'? commit: \[([0-9a-f]{40})\]/)?.[1] ?? said.match(/([0-9a-f]{40}) is the first '?bad'? commit/)?.[1] ?? "";
     } finally {
       git(["bisect", "reset"], { mutates: true, allowFail: true });
       untuck(tucked);
