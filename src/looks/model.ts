@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { homeDir } from "../config";
+import BUILTIN from "./builtin.json";
 
 export interface LookTerminal {
   baseProfile?: string;
@@ -89,10 +90,6 @@ export function validateLook(raw: unknown): string[] {
   return errors;
 }
 
-export function builtInDir(): string {
-  return join(import.meta.dir, "..", "..", "themes");
-}
-
 export function userDir(): string {
   const dir = join(homeDir(), "themes");
   mkdirSync(dir, { recursive: true });
@@ -117,7 +114,8 @@ function readDir(dir: string, source: Look["source"]): Look[] {
 export function allLooks(): Look[] {
   const mine = readDir(userDir(), "yours");
   const names = new Set(mine.map((t) => t.name));
-  return [...mine, ...readDir(builtInDir(), "built-in").filter((t) => !names.has(t.name))].sort((a, b) => a.name.localeCompare(b.name));
+  const builtIn = (BUILTIN as Look[]).map((t) => ({ ...t, source: "built-in" as const }));
+  return [...mine, ...builtIn.filter((t) => !names.has(t.name))].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function findLook(name: string): Look | undefined {

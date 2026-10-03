@@ -25,6 +25,8 @@ describe("theme files", () => {
       expect(look.name).toBe(f.replace(/\.json$/, ""));
     }
     expect(index).toEqual(files.map((f) => f.replace(/\.json$/, "")).sort());
+    const bundled = JSON.parse(readFileSync(join(import.meta.dir, "..", "src", "looks", "builtin.json"), "utf-8")).map((t: any) => t.name).sort();
+    expect(bundled).toEqual(index);
   });
 
   test("validation catches mistakes", () => {

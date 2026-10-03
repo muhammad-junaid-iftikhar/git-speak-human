@@ -4,6 +4,7 @@ import { validateLook } from "../src/looks/model";
 
 const dir = join(import.meta.dir, "..", "themes");
 const themes = [];
+const full: unknown[] = [];
 let bad = 0;
 for (const f of readdirSync(dir).filter((f) => f.endsWith(".json") && f !== "index.json").sort()) {
   const look = JSON.parse(readFileSync(join(dir, f), "utf-8"));
@@ -15,7 +16,9 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith(".json") && f !== "ind
     continue;
   }
   themes.push({ name: look.name, title: look.title, author: look.author, description: look.description });
+  full.push(look);
 }
 writeFileSync(join(dir, "index.json"), JSON.stringify({ themes }, null, 2) + "\n");
+writeFileSync(join(import.meta.dir, "..", "src", "looks", "builtin.json"), JSON.stringify(full) + "\n");
 console.log(`✔ ${themes.length} themes indexed${bad ? `, ${bad} invalid` : ""}`);
 if (bad) process.exit(1);
