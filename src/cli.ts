@@ -23,42 +23,42 @@ const run = (cmd: string): string => {
 
 const commands: Command[] = [
   {
-    name: "save",
-    aliases: ["s", "commit"],
-    description: "Save your changes with a message",
+    name: "done",
+    aliases: ["save", "s", "commit"],
+    description: "Save your work with a message",
     run: (args) => {
       const message = args.join(" ") || "Update";
-      console.log(`💾 Saving: "${message}"`);
+      console.log(`💾 Done: "${message}"`);
       run("git add .");
       run(`git commit -m "${message}"`);
-      console.log("✅ Changes saved!");
+      console.log("✅ Work saved!");
     },
   },
   {
-    name: "push",
-    aliases: ["p", "send"],
-    description: "Send your changes to the team",
+    name: "send",
+    aliases: ["push", "p"],
+    description: "Send your work to the team",
     run: () => {
-      console.log("📤 Pushing changes...");
+      console.log("📤 Sending to team...");
       const branch = run("git rev-parse --abbrev-ref HEAD");
       run(`git push origin ${branch}`);
-      console.log("✅ Changes sent!");
+      console.log("✅ Sent!");
     },
   },
   {
-    name: "pull",
-    aliases: ["get", "update"],
-    description: "Get the latest changes from the team",
+    name: "get",
+    aliases: ["pull", "update"],
+    description: "Get the latest work from the team",
     run: () => {
-      console.log("📥 Pulling latest changes...");
+      console.log("📥 Getting latest...");
       run("git pull origin");
       console.log("✅ You're up to date!");
     },
   },
   {
-    name: "status",
-    aliases: ["st", "check"],
-    description: "See what you've changed",
+    name: "show",
+    aliases: ["status", "st", "check"],
+    description: "Show what you changed",
     run: () => {
       const status = run("git status --short");
       if (!status) {
@@ -72,23 +72,23 @@ const commands: Command[] = [
   },
   {
     name: "start",
-    aliases: ["branch", "new"],
+    aliases: ["begin", "new", "branch"],
     description: "Start a new piece of work",
     run: (args) => {
       const name = args.join("-") || "feature";
-      console.log(`🌱 Creating new branch: ${name}`);
+      console.log(`🌱 Starting: ${name}`);
       run(`git checkout -b ${name}`);
-      console.log(`✅ You're now on branch: ${name}`);
+      console.log(`✅ You're now working on: ${name}`);
     },
   },
   {
     name: "switch",
-    aliases: ["go", "checkout"],
-    description: "Switch to another branch",
+    aliases: ["go", "move", "checkout"],
+    description: "Switch to another piece of work",
     run: (args) => {
       const branch = args.join("-");
       if (!branch) {
-        console.log("📋 Available branches:");
+        console.log("📋 Your work branches:");
         console.log(run("git branch -a"));
         return;
       }
@@ -98,22 +98,22 @@ const commands: Command[] = [
     },
   },
   {
-    name: "undo",
-    aliases: ["revert"],
-    description: "Undo your last changes",
+    name: "oops",
+    aliases: ["undo", "revert"],
+    description: "Undo your last action",
     run: () => {
-      console.log("⏮️  Undoing last commit...");
+      console.log("⏮️  Undoing last action...");
       run("git reset --soft HEAD~1");
-      console.log("✅ Last commit undone (changes still here)");
+      console.log("✅ Undone (your changes are still here)");
     },
   },
   {
-    name: "history",
-    aliases: ["log", "timeline"],
-    description: "See what changed recently",
+    name: "what-happened",
+    aliases: ["history", "log", "timeline"],
+    description: "See what everyone did recently",
     run: () => {
       const log = run("git log --oneline -10");
-      console.log("\n📜 Recent changes:");
+      console.log("\n📜 Recent work:");
       console.log(log);
       console.log();
     },
@@ -124,10 +124,10 @@ const commands: Command[] = [
     description: "Show this help message",
     run: () => {
       console.log(`
-🎤 git-speak-human v${VERSION}
-Git for people who don't know git.
+🎤 buddy
+Git for humans. Just talk to your buddy.
 
-Usage: speak <command> [args]
+Usage: buddy <command> [args]
 
 Commands:
 `);
@@ -135,18 +135,18 @@ Commands:
         const aliases = cmd.aliases.length
           ? ` (${cmd.aliases.join(", ")})`
           : "";
-        console.log(`  ${cmd.name.padEnd(10)} ${aliases.padEnd(20)} ${cmd.description}`);
+        console.log(`  ${cmd.name.padEnd(14)} ${aliases.padEnd(25)} ${cmd.description}`);
       });
       console.log(`
 Examples:
-  speak save "I added a feature"
-  speak push
-  speak pull
-  speak start my-feature
-  speak switch main
-  speak status
-  speak undo
-  speak history
+  buddy done "I added a button"
+  buddy send
+  buddy get
+  buddy show
+  buddy start dark-mode
+  buddy switch main
+  buddy oops
+  buddy what-happened
 `);
     },
   },

@@ -1,6 +1,6 @@
-# 🎤 git-speak-human
+# 🎤 buddy
 
-Git for people who don't know git. Just speak what you want to do.
+Git for humans. Just talk to your buddy.
 
 ## Install
 
@@ -11,58 +11,58 @@ bun install -g git-speak-human
 ## Use It
 
 ```bash
-speak save "I added a button"      # Save your work
-speak push                          # Send changes to team
-speak pull                          # Get latest changes
-speak status                        # See what you changed
-speak start my-feature              # Start new work
-speak switch main                   # Switch branches
-speak undo                          # Undo last save
-speak history                       # See recent changes
+buddy done "I added a button"      # Save your work
+buddy send                          # Send to team
+buddy get                           # Get latest
+buddy show                          # See what changed
+buddy start my-feature              # Start new work
+buddy switch main                   # Switch branches
+buddy oops                          # Undo last action
+buddy what-happened                 # See recent changes
 ```
 
 ## Commands
 
 | Command | Aliases | What it does |
 |---------|---------|--------------|
-| `save` | `s`, `commit` | Save your changes with a message |
-| `push` | `p`, `send` | Send changes to the team |
-| `pull` | `get`, `update` | Get latest changes from team |
-| `status` | `st`, `check` | See what you've changed |
-| `start` | `branch`, `new` | Start a new piece of work |
-| `switch` | `go`, `checkout` | Switch to another branch |
-| `undo` | `revert` | Undo your last changes |
-| `history` | `log`, `timeline` | See recent changes |
+| `done` | `save`, `s`, `commit` | Save your work with a message |
+| `send` | `push`, `p` | Send your work to the team |
+| `get` | `pull`, `update` | Get the latest work from the team |
+| `show` | `status`, `st`, `check` | Show what you changed |
+| `start` | `begin`, `new`, `branch` | Start a new piece of work |
+| `switch` | `go`, `move`, `checkout` | Switch to another piece of work |
+| `oops` | `undo`, `revert` | Undo your last action |
+| `what-happened` | `history`, `log`, `timeline` | See what everyone did recently |
 
 ## Examples
 
-**Save and push your work:**
+**Save and send your work:**
 ```bash
-speak save "Fixed the login bug"
-speak push
+buddy done "Fixed the login bug"
+buddy send
 ```
 
 **Get latest changes:**
 ```bash
-speak pull
+buddy get
 ```
 
 **Start a new feature:**
 ```bash
-speak start dark-mode
+buddy start dark-mode
 # Now you're on the dark-mode branch
-speak save "Added dark theme"
-speak push
+buddy done "Added dark theme"
+buddy send
 ```
 
 **See what you changed:**
 ```bash
-speak status
+buddy show
 ```
 
 **Undo a mistake:**
 ```bash
-speak undo
+buddy oops
 ```
 
 ---
