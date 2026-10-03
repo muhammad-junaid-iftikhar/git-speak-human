@@ -304,6 +304,7 @@ define({
     record("when-broke", "before hunting for the bad save");
     const tucked = tuck("tucked away while hunting for the bad save");
     let culprit = "";
+    let trail = "";
     try {
       git(["bisect", "start"], { mutates: true });
       git(["bisect", "bad", "HEAD"], { mutates: true });
@@ -327,12 +328,13 @@ define({
         }
       }
       const log = git(["bisect", "log"], { allowFail: true }).stdout;
+      trail = `${said}\n${log}`;
       culprit = log.match(/# first bad commit: \[([0-9a-f]{40})\]/)?.[1] ?? said.match(/([0-9a-f]{40}) is the first bad commit/)?.[1] ?? "";
     } finally {
       git(["bisect", "reset"], { mutates: true, allowFail: true });
       untuck(tucked);
     }
-    if (!culprit) fail("I couldn't pin down one save. Maybe it broke and got fixed a few times?");
+    if (!culprit) fail("I couldn't pin down one save. Maybe it broke and got fixed a few times?", { details: trail });
     const [id, msg, who, date] = out(["log", "-1", `--format=%h${SEP}%s${SEP}%an${SEP}%aI`, culprit]).split(SEP);
     const files = out(["show", "--name-only", "--format=", culprit]).split("\n").filter(Boolean);
     ui.blank();

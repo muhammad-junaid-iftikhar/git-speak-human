@@ -107,6 +107,7 @@ describe("history tools", () => {
       if (i === 4) s.write("broken", "yes\n");
       s.run("done", `step ${i}`);
     }
+    s.env.GITBUDDY_DEBUG = "1";
     const r = s.run("when-broke", "--good", "good", "--run", "test ! -f broken");
     if (r.json?.data?.message !== "step 4") console.log("when-broke debug:", r.stdout, r.stderr, s.git("log", "--oneline"));
     expect(r.json.data.message).toBe("step 4");
