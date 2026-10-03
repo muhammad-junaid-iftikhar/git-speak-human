@@ -1,83 +1,116 @@
-# 🎤 gitbuddy
+# 🐙 gitbuddy
 
-Git for humans. Work on multiple things at once. No branches. Just work.
+**Git, but human.** Plain-English commands on top of real git. You can't lose work, everything can be undone, and you can juggle several tasks without ever touching a branch.
+
+```bash
+gitbuddy work "dark mode"        # start a task
+gitbuddy done "Add dark theme"   # save it for good
+gitbuddy send                    # share it with your team
+gitbuddy undo                    # changed your mind? undo anything
+```
+
+New to git? You never have to learn it. Been using git for years? gitbuddy is faster, safer, and still plain git underneath (`--explain` shows every real command).
 
 ## Install
 
+Pick one:
+
 ```bash
+# With Bun
 bun install -g github:muhammad-junaid-iftikhar/git-speak-human
+
+# macOS / Linux, no Bun needed (once a release is published)
+curl -fsSL https://raw.githubusercontent.com/muhammad-junaid-iftikhar/git-speak-human/main/install.sh | sh
+
+# Windows PowerShell (once a release is published)
+irm https://raw.githubusercontent.com/muhammad-junaid-iftikhar/git-speak-human/main/install.ps1 | iex
 ```
 
-## Use It
+Then type `gitbuddy` on its own to get a friendly menu, or `gitbuddy learn` for a 5-minute hands-on tutorial.
+
+## The 10 commands you'll actually use
+
+| You want to… | Type |
+|---|---|
+| See what's going on | `gitbuddy show` |
+| Save your changes for good | `gitbuddy done "what you did"` |
+| Send them to your team | `gitbuddy send` |
+| Get your team's latest work | `gitbuddy get` |
+| Do both at once | `gitbuddy sync` |
+| Start a new task (current one is kept safe) | `gitbuddy work "name"` |
+| Jump to another task | `gitbuddy switch "name"` |
+| See all your tasks | `gitbuddy list` |
+| Undo whatever you just did | `gitbuddy undo` |
+| Fix clashing changes | `gitbuddy conflicts` |
+
+## Juggle tasks without branches
 
 ```bash
-gitbuddy work "dark-mode"              # Start work 1
-gitbuddy save                          # Save progress
-gitbuddy work "fix-button"             # Switch to work 2 (auto-saves work 1)
-gitbuddy my-work                       # See all your work with dates
-gitbuddy switch "dark-mode"            # Go back to work 1
-gitbuddy done "ready to go"            # Commit to main
-gitbuddy send                          # Push to team
-gitbuddy get                           # Get latest changes
+gitbuddy work "dark mode"      # make some changes…
+gitbuddy work "fix login"      # dark mode is put away safely, fresh start
+gitbuddy get                   # pull the team's latest any time
+gitbuddy list                  # ▶ fix login · dark mode (2 changed files, 3 min ago)
+gitbuddy switch "dark mode"    # exactly where you left it
 ```
 
-## Commands
+Each workspace remembers its own changes, including new files. Everything stays on `main`. When you're ready, `gitbuddy done` saves it and `gitbuddy share` opens a pull request.
 
-| Command | Aliases | What it does |
-|---------|---------|--------------|
-| `work` | `start-work`, `create` | Start a new piece of work (auto-saves current) |
-| `save` | `checkpoint`, `progress` | Save your progress (without committing) |
-| `my-work` | `work-list`, `list-work`, `tasks` | See all your work items with timestamps |
-| `switch` | `switch-to`, `go` | Switch to another piece of work |
-| `done` | `commit` | Commit your work to main |
-| `send` | `push`, `p` | Send your work to the team |
-| `get` | `pull`, `update` | Get the latest work from the team |
-| `show` | `status`, `st`, `check` | Show what you changed |
-| `oops` | `undo`, `revert` | Undo your last action |
-| `what-happened` | `history`, `log`, `timeline` | See what everyone did recently |
+## You can't break it
 
-## Workflow Example
+- **Snapshot before every change.** `gitbuddy undo` reverses any gitbuddy action; `gitbuddy undo --list` shows them all; `gitbuddy redo` puts it back.
+- **`gitbuddy rescue`** finds work you thought was lost: dropped stashes, rewritten saves, old snapshots.
+- **Secrets guard.** `.env` files, private keys and API tokens are blocked before they're saved or sent.
+- **Sent saves are protected.** gitbuddy won't rewrite history your team already has; it offers `gitbuddy reverse` instead.
+- **`gitbuddy doctor`** checks git, your login, the remote and big files.
 
-**Work on multiple things at once (all on main):**
+## Everything else
+
+| Area | Commands |
+|---|---|
+| Start | `new` · `copy <url>` · `connect <url>` · `connect --github` |
+| Everyday | `show` · `diff` · `done` · `send` · `get` · `sync` · `fix-last` |
+| Workspaces | `work` · `switch` · `list` · `save` · `peek` · `rename` · `drop` |
+| Safety | `undo` · `redo` · `rescue` · `trash` · `restore` · `doctor` |
+| History | `history` · `who file:42` · `find "text"` · `go-back file to yesterday` · `time-travel "last week"` · `back` · `when-broke` |
+| Fixing | `throw-away` · `unsave` · `reverse` · `ignore` · `forget-file` |
+| Teamwork | `conflicts` · `keep mine/theirs/both` · `continue` · `abort` · `share` · `review 42` · `combine` · `grab` · `tidy` · `branches` |
+| Releases | `release 1.2.0` · `versions` · `clean-up` · `git <anything>` |
+| You | `me` · `setup` · `config` · `learn` · `completion` · `prompt` · `update` |
+
+`gitbuddy help <command>` explains any of them. Every command takes `--explain`, `--dry-run`, `--json`, `--yes`, `--quiet` and `--no-fun`.
+
+**Coming from git?** See [CHEATSHEET.md](CHEATSHEET.md).
+
+## Fun included
+
+Type `gitbuddy` alone for a menu that adapts to your project. You get a profile with an avatar, levels, day streaks and 18 achievements (`gitbuddy me`), plus random tips and themes (`gitbuddy config set theme neon|pastel|pirate|mono`). Prefer it quiet? `gitbuddy config set fun false`.
+
+## For AI agents
+
+gitbuddy is built to be driven by agents too:
 
 ```bash
-# Start work 1
-gitbuddy work "dark-mode feature"
-# Make changes...
-gitbuddy save          # Save progress
-
-# Switch to work 2 (automatically saves work 1)
-gitbuddy work "fix-login-button"
-# Make changes...
-gitbuddy save
-
-# See all your work with timestamps
-gitbuddy my-work
-# Output:
-#   stash@{0}: WORK: fix-login-button [Oct 3 2:45pm]
-#   stash@{1}: WORK: dark-mode feature [Oct 3 2:30pm]
-
-# Go back to work 1
-gitbuddy switch "dark-mode"
-# Continue where you left off...
-gitbuddy save
-
-# Ready to commit? Send to team
-gitbuddy done "dark-mode feature complete"
-gitbuddy send
-
-# Get latest changes from team
-gitbuddy get
-
-# See what changed
-gitbuddy show
-
-# Made a mistake? Undo it
-gitbuddy oops
+claude mcp add gitbuddy -- gitbuddy mcp     # MCP server with safety annotations
+gitbuddy state --json                       # everything about the repo in one call
+gitbuddy commands --json                    # every command, its args and side effects
 ```
 
-**The magic:** Everything stays on `main`. No branches. No confusion. Just work on multiple things, save progress, switch between them.
+Every changing command returns a `snapshot_id` you can pass to `gitbuddy undo`. gitbuddy never prompts without a terminal. See [AGENTS.md](AGENTS.md).
 
----
+## AI commit messages (optional)
 
-That's it. No git knowledge needed. Just speak what you want to do.
+`gitbuddy done` with no message suggests one from your changes. To use an AI model, point gitbuddy at any command that reads a diff on stdin and prints a message:
+
+```bash
+gitbuddy config set ai_command "claude -p"
+```
+
+## How it works
+
+A gitbuddy project is a normal git repo. Workspaces and snapshots are stored as hidden git refs under `refs/gitbuddy/`, and settings live in `.git/gitbuddy/`. Nothing is ever committed for you, and you can stop using gitbuddy at any time without losing anything.
+
+## Contributing
+
+Bug reports and ideas are very welcome; see [CONTRIBUTING.md](CONTRIBUTING.md) and the roadmap in [task.md](task.md).
+
+MIT licensed.

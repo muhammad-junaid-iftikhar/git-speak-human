@@ -1,0 +1,11 @@
+name: Idea
+description: Suggest a command or improvement
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would make gitbuddy better?
+      description: Describe what you'd like to type and what should happen.
+    validations:
+      required: true

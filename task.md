@@ -146,11 +146,11 @@ Each row gets a command, plain-English output, `--explain` and `--json`.
 
 ## Phase 8 — Docs, community, world (P2)
 
-- [ ] README rewrite: 10-second GIF, install line, 5 commands, "for git pros" section mapping git → gitbuddy.
+- [x] README rewrite: install line, top commands, "for git pros" cheatsheet. (10-second GIF still to record.)
 - [x] `gitbuddy learn`: optional 5-minute interactive tutorial in a sandbox repo.
-- [ ] Cheatsheet page (git ↔ gitbuddy), docs site.
+- [x] Cheatsheet page (git ↔ gitbuddy) in CHEATSHEET.md. (Docs site: later.)
 - [ ] Translations of all messages (start with en, es, de, ur, hi, ar, pt, zh). Strings go in `src/i18n/`.
-- [ ] LICENSE file (MIT), CONTRIBUTING.md, issue templates, CODE_OF_CONDUCT.
+- [x] LICENSE file (MIT), CONTRIBUTING.md, issue templates, CODE_OF_CONDUCT.
 - [ ] Opt-in, anonymous usage stats only if ever needed. Off by default.
 
 ---

@@ -1,0 +1,20 @@
+name: Something went wrong
+description: gitbuddy did something unexpected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What did you run, and what happened?
+      description: Paste the command and its output. Adding --explain shows the git commands gitbuddy ran.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      description: Output of `gitbuddy version` and `git --version`, plus your OS
