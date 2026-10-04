@@ -113,6 +113,10 @@ gitbuddy theme my-original     # back to how it was before gitbuddy
 
 Built in: dracula, nord, tokyo-night, catppuccin-mocha, gruvbox, solarized-dark, rose-pine, synthwave, pirate, juni. Anyone can add more: a theme is one JSON file (see [CONTRIBUTING.md](CONTRIBUTING.md#adding-a-terminal-theme)), and `gitbuddy theme --online` lists the newest from GitHub. Terminal colors currently support macOS Terminal.app; the prompt and shell parts work in any terminal running zsh.
 
+## Use it from your AI assistant
+
+Install the skill (Claude Code, OpenCode, ChatGPT and other LLMs) in [skills/README.md](skills/README.md). Then ask in plain English: "save my changes and open a pull request".
+
 ## For AI agents
 
 gitbuddy is built to be driven by agents too:
